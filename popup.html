@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<!--
+Jisho.org Chrome Extension
+ Helps to quickly search Jisho.org by either
+  (A) using the iframe in the browser-action Google Chrome Extension or
+    Purpose: allows the user to access nearly all features of the website without opening a page.
+  (B) selecting text and then using the right-click context menu to search Jisho.org with that text
+    Purpose: convenience; similar to Google Custom Search Engine just without typing
+ 
+Chrome Extension Type: Browser Action
+
+VERSION HISTORY
+ - Made Iframe launched on document ready.
+   - Extension window should appear quicker.
+   - Font-Awesome spinner displays in the corner until iframe document.ready function fires.
+   - "Narrow" view doesn't have a weird initial load effect.
+
+-->
+<html>
+
+  <head>
+    <meta charset="UTF-8">
+    <!-- Font-awesome for spinner.GIF replacement -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+  </head>
+  
+  <!-- Changes to body and iframe based on viewing preferences
+  
+  Wide/Large: height:580px; width:495px; 
+  <iframe sandbox="allow-same-origin allow-forms allow-scripts" seamless="" width="495" height="640" src="http://jisho.org"></iframe>
+  
+  Narrow: height:500px; width:335px; 
+  <iframe sandbox="allow-same-origin allow-forms allow-scripts" seamless="" width="335" height="480" src="http://jisho.org"></iframe>
+  
+  -->
+  
+  <body style="height:580px; width:495px;">
+    <div id="divContainer">
+       <div id="divMenu">
+        Go to <a id="linkJisho" href="">Jisho.org</a>, Window: 
+         <input type="radio" name="rSearch" value="Wide" id="rbtnWide" checked> Wide
+         <input type="radio" name="rSearch" value="Narrow" id="rbtnNarrow" > Narrow
+         <i id="spinner" class="fa fa-spinner fa-pulse fa-lg" style="height:10px;float:right;"></i>
+       </div>
+       
+       <div id="searchSite" style="clear:both;">
+          <!--
+           <iframe sandbox="allow-same-origin allow-forms allow-scripts" seamless="" src="http://jisho.org/" style="border:none; width:495px;height:540px;"></iframe>
+           -->
+       </div>   
+    </div>
+
+<!-- JQUERY, FontAwesome Spinner -->
+<!-- Google Hosted Libraries: https://developers.google.com/speed/libraries/ -->
+<script src="js/jquery.min.js"></script>
+<script src="js/popup.js"></script>
+
+  </body>
+</html>
+
+
