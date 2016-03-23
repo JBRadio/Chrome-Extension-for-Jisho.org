@@ -91,12 +91,21 @@
        
        chrome.storage.local.get("theme", function (result) {
            
-           if ( result.theme == "Dark" ) {
-               document.getElementById('btnTheme').innerHTML = "Dark";
-           }
+           // #.) Check user settings for preferred Theme
+           // -------------------------------------------
+           // When a theme has never been defined before, it will be "undefined" so make it the default.
+           var theme;
            
-           result.theme == "Light" ? $('body').removeClass("dark") : $('body').addClass("dark");
-           result.theme == "Light" ? $('a').removeClass("dark") : $('a').addClass("dark");
+           if ( result.theme == undefined || result.theme == "" || result.theme.length == 0 )
+               theme = "Light"; // default
+           else
+               theme = result.theme;
+           
+           if ( theme == "Dark" )
+               document.getElementById('btnTheme').innerHTML = "Dark";
+           
+           theme == "Light" ? $('body').removeClass("dark") : $('body').addClass("dark");
+           theme == "Light" ? $('a').removeClass("dark") : $('a').addClass("dark");
        });
        
        chrome.storage.local.get("view", function (result) {
