@@ -1,5 +1,9 @@
 /*
  * JAVASCRIPT behind Jisho.org Browser-action Google Chrome Extension
+ * https://github.com/JBRadio/Chrome-Extension-for-Jisho.org
+ *
+ * Jisho Forum Post
+ * http://jisho.org/forum/56eaf070d5dda72227000349-unofficial-jisho-dot-org-chrome-extension-chrome-developer-mode
  *
  * Search Jisho.org
  *  Select text and then open Jisho.org extension to seed search
