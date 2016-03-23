@@ -1,15 +1,26 @@
 <!DOCTYPE html>
 <!--
 Jisho.org Chrome Extension
+https://github.com/JBRadio/Chrome-Extension-for-Jisho.org/tree/master/js
+
  Helps to quickly search Jisho.org by either
   (A) using the iframe in the browser-action Google Chrome Extension or
     Purpose: allows the user to access nearly all features of the website without opening a page.
   (B) selecting text and then using the right-click context menu to search Jisho.org with that text
     Purpose: convenience; similar to Google Custom Search Engine just without typing
+  (C) selecting text and then clicking extension to seed popup.html's Jisho.org search value
  
 Chrome Extension Type: Browser Action
 
 VERSION HISTORY
+ - Menu bar
+    - Radio buttons are replaced with buttons that change value to save space.
+ - Content Script
+    - Seeds iframe src URL on extension launch
+    - Overrides CSS by injected "darkRedTheme.css" based on preferences
+ - Extension onClick
+    - Content script allows for text selection to seed Jisho.org search lookup
+    - Chrome storage holds user preferences (Window size, Light/Dark Theme preference)
  - Made Iframe launched on document ready.
    - Extension window should appear quicker.
    - Font-Awesome spinner displays in the corner until iframe document.ready function fires.
@@ -20,31 +31,26 @@ VERSION HISTORY
 
   <head>
     <meta charset="UTF-8">
+    <!-- Popup.css -->
+    <link rel="stylesheet" href="/css/popup.css" >
+    
     <!-- Font-awesome for spinner.GIF replacement -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
   </head>
   
-  <!-- Changes to body and iframe based on viewing preferences
-  
-  Wide/Large: height:580px; width:495px; 
-  <iframe sandbox="allow-same-origin allow-forms allow-scripts" seamless="" width="495" height="640" src="http://jisho.org"></iframe>
-  
-  Narrow: height:500px; width:335px; 
-  <iframe sandbox="allow-same-origin allow-forms allow-scripts" seamless="" width="335" height="480" src="http://jisho.org"></iframe>
-  
-  -->
-  
   <body style="height:580px; width:495px;">
     <div id="divContainer">
        <div id="divMenu">
-        Go to <a id="linkJisho" href="">Jisho.org</a>, Window: 
-         <input type="radio" name="rSearch" value="Wide" id="rbtnWide" checked> Wide
-         <input type="radio" name="rSearch" value="Narrow" id="rbtnNarrow" > Narrow
+        Go to <a id="linkJisho" href="">Jisho.org</a>
+        , Window: 
+         <button id="btnWindow">Wide</button>
+         
          <i id="spinner" class="fa fa-spinner fa-pulse fa-lg" style="height:10px;float:right;"></i>
+         , Theme: <button id="btnTheme">Light</button>
        </div>
        
        <div id="searchSite" style="clear:both;">
-          <!--
+          <!-- Now inserted via DOM ready function
            <iframe sandbox="allow-same-origin allow-forms allow-scripts" seamless="" src="http://jisho.org/" style="border:none; width:495px;height:540px;"></iframe>
            -->
        </div>   
