@@ -13,6 +13,24 @@
  *  Store and process user preferences (window size, theme colors)
  *
  * Dark/Yoake Theme modified from https://userstyles.org/styles/115621/jisho (see css file)
+ *
+ * THOUGHTS / IMPROVEMENTS
+   - If <iframe> takes a considerable time to load jisho.org on extension open, 
+      consider using a persistent background html page (background.html) to host the <iframe>
+      in the background and allow popup.html to adopt and/or clone the <iframe> node on the 
+      popup.html page.
+       Pros: Hopefully the loading of Jisho.org website is as short as possible consistently. 
+             Also, last search results will appear when the extension opens and no current-tab 
+             selected text is present.
+       Cons: Persistent background.html will have an active process, which means that everything
+             loading in the <iframe> or Jisho.org will continue to do so in the background. This
+             will include advertisements I assume. 
+       References:
+             Google Background Pages: https://developer.chrome.com/extensions/background_pages
+             Adopt/Clone iFrame Node Discussion: https://groups.google.com/a/chromium.org/forum/#!topic/chromium-extensions/us2cUTZl5ws
+             DevDocs Clone: http://devdocs.io/dom/node/clonenode
+             DevDocs Adopt: http://devdocs.io/dom/document/adoptnode
+ *
  */
 
   // Global Variables
@@ -158,7 +176,7 @@
         var btnTheme = document.getElementById('btnTheme');
 
         if ( btnTheme.innerHTML != "Dark" && btnTheme.innerHTML != "Light" ) {
-            console.log("Invalid theme: " + theme);
+            console.log("Invalid theme: " + btnTheme.innerHTML);
             return;
         }
 
@@ -223,12 +241,41 @@
 // DARK THEME - Process message from Content Script injection
 chrome.runtime.onMessage.addListener( function(request, sender, sendResponse) {
     
-    // DEBUG:
-    //console.log("Heard a message from Content Script");
-    //console.log("Content Script's request method: " + request.method);
+    /*
+    Issue: 
+    A message sent from popup.js can be recevied by popup.js and all pages with 
+    chome.runtime.onMessage.addListener functions defined. When placing console.log to determine
+    origin of messages, you may see duplicate console.log messages and then think your functions
+    are getting called times however many console.log message.
     
+    Reason:
+    If tabs aren't specified in the chrome sendMessage call, chrome.tabs.sendMessage(...),
+    for example, chrome.runtime.sendMessage(...) is used, then all extension message Event 
+    Listening pages can hear/receive the same sent extension message.
+    
+    Application:
+    In our extension, we are communicating with a content script injected into an iframe loaded 
+    into our popup.html and not a content script from a tab's page. So in this case, I used 
+    chrome.runtime.sendMessage which results in popup.js hearing its own message. Make sure
+    determing message values for processing are unique.
+    
+    Reference:
+    https://developer.chrome.com/extensions/messaging
+    
+    On the receiving end, you need to set up an runtime.onMessage event listener to handle the message. This looks the same from a content script or extension page.
+    
+    If multiple pages are listening for onMessage events, only the first to call sendResponse() for a particular event will succeed in sending the response. All other responses to that event will be ignored.
+    */
+    
+    // DEBUG:
+    //console.log("Popup.js received a message: " + request.method);
+    
+    // #.) Determine if the incoming message should be processed by popup.js
     if (request.method == "checkCurrentTheme") {
          
+        // #.) Determine if we should update the theme
+        //     - This processing block should only be called once when the extension opens.
+        //     - Default is Light so only check for Dark
         var theme = document.getElementById('btnTheme').innerHTML;
 
         if ( theme == "Dark" )

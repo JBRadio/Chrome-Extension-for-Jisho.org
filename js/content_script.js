@@ -1,5 +1,8 @@
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     
+    // DEBUG:
+    //console.log("Content script: Received message with request " + request.method );
+    
     // CONTENT SCRIPT - TEXT SELECTION SEED (EVENT LISTENER) << MESSAGE OUTBOUND >>
     // ------------------------------------
     if (request.method == "getSelection")
@@ -22,7 +25,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
         
         // #.) Create <link> tag to add dark theme CSS file to the DOM
         var cssLink = document.createElement("link");
-            console.log(chrome.extension.getURL("/css/darkRedTheme.css"));
+            //console.log(chrome.extension.getURL("/css/darkRedTheme.css"));
             cssLink.href = chrome.extension.getURL("/css/darkRedTheme.css"); 
             cssLink .rel = "stylesheet";
             cssLink .type = "text/css";
@@ -33,15 +36,19 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     
     if (request.method == "changeThemeLight" && document.location.host == "jisho.org") {
         // #.) Gather all <link> tags
-        var darkCssLink = document.getElementsByTagName("link");
+        var darkCssLink = document.head.getElementsByTagName("link"); // Search only <head>
         
-        // #.) Determine if we can remove the dark theme <link> tag
+        // #.) Go through all <link> in <head> to determine if we can remove the dark theme <link> tag
         if ( darkCssLink.length > 0 ) {
-            var lastLinkTag = darkCssLink[ darkCssLink.length - 1];
-            if ( lastLinkTag.rel = "stylesheet" && lastLinkTag.href == "/css/darkRedTheme.css")
-                lastLinkTag.parentNode.removeChild(lastLinkTag);
-        }   
-    }
+            for ( var i = 0; i < darkCssLink.length; i++) {
+                if ( darkCssLink[i].href.indexOf("/css/darkRedTheme.css") > 0 ) {
+                    //console.log("Removed link: " + darkCssLink[i].href);
+                    darkCssLink[i].parentNode.removeChild(darkCssLink[i]);
+                    break; // Should only need to remove one <link>
+                }
+            }
+         }   
+     }
 });
 
 
