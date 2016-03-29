@@ -9,7 +9,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
         // CONTENT SCRIPT - TEXT SELECTION SEED (EVENT LISTENER) << MESSAGE OUTBOUND >>
         // ------------------------------------
         case "getSelection":
-            console.log("Processing: " + request.method);
+            //console.log("Processing: " + request.method);
             
             // Credit: http://stackoverflow.com/questions/5379120/get-the-highlighted-selected-text
             var text = "";
@@ -19,7 +19,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
                 text = document.selection.createRange().text;
             }
             
-            console.log("Text Selected(" + text.length + "): " + text);
+            //console.log("Text Selected(" + text.length + "): " + text);
             sendResponse({method:"searchSelectedText", data: text});
 
         break;
@@ -42,7 +42,16 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
                 console.log("data for " + request.method + "is invalid: " + request.data)
                 return;
             }
-            bottomMenuClicked(request.data);
+            
+            if (request.data == "link") {
+                if ( document.location.host !== "jisho.org" )
+                    return; // We should only be performing these methods in the <iframe>
+                
+                //console.log("Link clicked, sending: " + document.location.href);
+                sendResponse({method:"CopyToClipboard", data:document.location.href});
+            } else            
+                bottomMenuClicked(request.data);
+            
             break;
         
             
@@ -64,7 +73,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
                 return;
             }
             
-            console.log("Sending response for: " + document.location.href);
+            //console.log("Sending response for: " + document.location.href);
             sendResponse({method:"updateLastSearched", data: document.location.href});
             break;
             
@@ -112,8 +121,8 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     
     function bottomMenuClicked(linkClicked) {
         
-        console.log("Script host: " + document.location.host);
-        console.log("Link clicked: " + linkClicked);
+        //console.log("Script host: " + document.location.host);
+        //console.log("Link clicked: " + linkClicked);
         
         if ( document.location.host !== "jisho.org" )
             return; // We should only be performing these methods in the <iframe>
@@ -129,13 +138,24 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
                 break
                 
             case "top":
+                // #.) Scroll <iframe> to the Top    
                 window.scroll(0,0);
+                // Return focus to the search bar for an additional search without mouse interaction
+                // <input type="text" class="keyword japanese_gothic" name="keyword" id="keyword" ...>
+                var searchBar = document.getElementById('keyword');
+                searchBar.focus(); 
                 break;
                 
             case "home":
                 var url = "http://jisho.org/";
                 window.location.assign(url);
                 break;
+                
+            case "advSearch":
+                var url = "http://jisho.org/docs";
+                window.location.assign(url);
+                break;
+                
         }
     }
 });

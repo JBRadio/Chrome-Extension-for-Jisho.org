@@ -38,8 +38,9 @@
         "<all_urls>",
         "http://*/*",
         "https://*/*",
-        "tabs",
         "contextMenus",
+        "clipboardWrite",
+        "tabs",
         "storage"
     ],
     

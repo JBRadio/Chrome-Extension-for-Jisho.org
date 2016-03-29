@@ -40,10 +40,15 @@
              DevDocs Adopt: http://devdocs.io/dom/document/adoptnode
  *
   - Bottom bar for additional features as links
-     Share/Copy to Clipboard: current location link.
      UI: 
           - Safari has on bottom: (Share), (Bookmarks), and (Switch tabs)
           - Chrome has on top: omnibox, tabs, "..." (More)
+*     
+  - Prevent flash of original CSS in Dark Theme
+*     
+  - Options page
+     Allow users to set theme there rather than a toggle if it helps reduce the amount of white CSS flashing.
+     Other ideas...
  *           
  *
  */
@@ -87,18 +92,28 @@
       chrome.storage.local.get("lastSearched", function (result) {
           // 2.) Validate results from storage
           if ( !result || result == undefined ) {
-              console.log("redirectIframeByLastSearch - Chrome.storage Get returned invalid.");
+              //console.log("redirectIframeByLastSearch - Chrome.storage Get returned invalid.");
               return;
           }
           
           if ( !result.lastSearched || result.lastSearched == undefined || result.lastSearched.lenth == 0 ) {
-              console.log("lastSearched is invalid or never been set.");
+              //console.log("lastSearched is invalid or never been set.");
               return;
           }
           // 3.) Redirect <iframe>
           redirectIframe(result.lastSearched, true);
           //console.log("Redirected <iframe> by Last Search criteria");
        });
+  }
+
+  function displayStatusWindowText(statusText) {
+      // 1.) Overwrite any message currently in div
+      $('#statusWindow').html(statusText);
+      
+      // 2.) JQUERY - Slide down status window  
+      $('#statusWindow').slideDown( 1000, function() {
+              $("#statusWindow").slideUp(500);
+          });
   }
 
 
@@ -182,7 +197,7 @@
                    
                    // TRACKING - User's last search item.
                     if ( !response.data || response.data == undefined ) {
-                        console.log("Last searched request is invalid: " + response.data);
+                        //console.log("Last searched request is invalid: " + response.data);
                         return;
                     }
 
@@ -193,7 +208,7 @@
                     }
 
                     chrome.storage.local.set({lastSearched: response.data}, function() {
-                     console.log("Last search recorded: " + response.data);
+                     //console.log("Last search updated: " + response.data);
                     });
                });
            });
@@ -203,8 +218,12 @@
          // ------------------------------------
          // Event Listeners (Top menu bar)
          // ------------------------------------
-         $('#linkJisho').on('click', function() {
+         $('#aJisho').on('click', function() {
             window.open('http://jisho.org'); 
+         });
+       
+         $('#aGitHub').on('click', function() {
+             window.open('https://github.com/JBRadio/Chrome-Extension-for-Jisho.org');
          });
 
 
@@ -299,6 +318,52 @@
             e.stopPropagation();
             e.preventDefault();
         });
+       
+        $('#aAdvSearch').on('click', function(e) {
+            // #.) Send a message to the iframe to change its properties. (Cross-origin)
+            chrome.runtime.sendMessage( {method:"bottomMenuClick", data:"advSearch"} );
+            e.stopPropagation();
+            e.preventDefault();
+        });
+       
+       $('#aLink').on('click', function (e) {
+        chrome.runtime.sendMessage({method: "bottomMenuClick", data:"link"}, function(response) {
+            if ( !response || response == undefined )
+                return;
+            
+            if ( !response.data || !response.data == undefined )
+                return;
+            
+            var url = $.trim(response.data);
+            //console.log("URL to copy: " + url);
+            
+            if ( url.length > 0 )
+            {
+                try {
+                    // REFERENCE
+                    // http://www.pakzilla.com/2012/03/20/how-to-copy-to-clipboard-in-chrome-extension/
+                    var copyDiv = document.createElement('div');
+                    copyDiv.contentEditable = true;
+                    document.body.appendChild(copyDiv);
+                    copyDiv.innerHTML = url;
+                    copyDiv.unselectable = "off";
+                    copyDiv.focus();
+                    document.execCommand('SelectAll');
+                    document.execCommand("Copy", false, null);
+                    document.body.removeChild(copyDiv);
+                } catch (e) {
+                    displayStatusWindowText("Unable to copy to clipboard!");
+                    console.log("Copy to clipboard error: " + e.message);
+                    return;
+                }
+                //alert("Copied URL to Clipboard."); // Alerts break extensions
+                displayStatusWindowText("Copied link to clipboard!");
+            }
+        });
+            e.stopPropagation();
+            e.preventDefault();
+       });
+       
 
         // This will run as soon as the popup document is ready.
         // FEATURE: Find the word selected.
@@ -336,6 +401,8 @@
    });
 
 
+// Outside document.ready()
+// ------------------------
 // Process message from Content Script injection
 chrome.runtime.onMessage.addListener( function(request, sender, sendResponse) {
     

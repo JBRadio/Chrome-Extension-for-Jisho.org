@@ -33,13 +33,16 @@ Popup/popover window theme has two settings: Light and Dark
  - Dark theme suggestions/bugs to wktk [AT] wekateka [DOT] com
  - Light theme are Jisho.org defaults
 
-Open Jisho in a new tab.
+Open Jisho.org homepage in a new tab.
+
+Open Unofficial Jisho Google Extension GitHub project page (check back for updates!).
 
 
 ## Additional Features - Bottom menu
-Navigate forward and backwards through searches made in one session (non-closing of extension)
-Scroll to top for faster access to search bar.
-Go to Jisho.org homepage within extension.
+- Navigation: Navigate forwards and backwards for pages loaded in one session (non-closing of extension)
+- Scroll Top: Like to make a another search? In addition to Ctrl+Home or Cmd+Up, you can click "Top."
+- Search Documentation: Link to Advanced Search Options to use in search bar
+- Copy Link: Copy current page location to clipboard for sharing with other applications.
 
 
 ## Chrome Permissions
@@ -47,6 +50,7 @@ Go to Jisho.org homepage within extension.
  - Access to tabs: Same as above.
  - Access to context menu: This is the right-click menu
  - Access to Chrome/local storage: Used for storing window size and theme preferences and last search save.
+ - Clipboard Write, allow access to "Copy Link" from the current search page
 
 
 ## Credits and Chrome Web Store
@@ -60,6 +64,7 @@ Dark theme credits go to wekateka. Copyright: CC BY-SA 4.0. Slight modifications
 ## Known Extension Behaviors and Issues
  - "Draw" feature in popover window does not work if window size was recently changed. Usually when the window starts as "Narrow" and then is changed to "Wide." This doesn't appear to be a problem if the window size starts as "Wide." As a workaround, please close the extension window and open it again (window size is saved as a preference) to use "Draw." The "radical" search feature appears to work fine in either starting window size.
  - While dark theme is set, searches in the extension start off Light and then go Dark where the speed of this happening can vary. This happens for me when I am not using stylish or any CSS injecting extension. When the iframe document is loaded, the content script injected makes a call to the extension to see which theme should be used based on user settings. The extension then tells the document, with the content-script injected, to update its theme. It takes some time but should be quick as resources/extension is local - experience can vary based on PC's technical specs. Perhaps the desired effect will occur more gracefully with another extension. I've tried stylish and it doesn't seem to affect iframes used inside of another extension. Code is available on GitHub, please let me know if you see a more efficient way to handle this.
+ - Text selection seed does not work. First, if you have just recently reloaded the extension or installed it, refresh the page so that the extension's content script can be injected. If it still continues to fail, check the domain/host to see if it's owned by Google. It may be likely that Google blocks certain actions on its pages. If Google is not the case, please report it in the Jisho.org forum.
  
  
  ## Discussion and Feedback

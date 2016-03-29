@@ -4,9 +4,6 @@
  *
  */
 
-/* TESTING CSS LOAD */
-/* body { background-color: black; } */
-
 /* ----------------
    Dark body theme 
    ----------------
@@ -53,12 +50,22 @@ iframe.narrow {
 
 /* Popup */
 
-div#searchSite { /* Div containing <iframe> */
-    padding:0px; /* Fit in as musch of the iframe as possible */
-    overflow: hidden;
+a { text-decoration: none; }
+a:hover { text-decoration: underline }
+a:link, a:visited { color: #546dff; }
+
+div#statusWindow {
+    background-color:coral;
+    color: white;
+    /* width: 100%; */
+    height: 15px; /* Specify a height for JQUERY SlideDown to work properly */
+    display: none;
 }
 
-a:link, a:visited { color: #546dff; }
+div#searchSite { /* Div containing <iframe> */
+    padding:0px; /* Fit in as musch of the iframe as possible */
+    overflow: hidden; /* Attempt to hide Ads; Reduce horizontal scrollbar */
+}
 
 /* 
  * -----------------
@@ -78,10 +85,6 @@ a:link, a:visited { color: #546dff; }
 }
 #ifControls li {
   display: inline-block;
-}
-
-#ifControls li a {
-    text-decoration: none;
 }
 
 #ifControls:after {

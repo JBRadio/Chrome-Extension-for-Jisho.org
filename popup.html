@@ -51,12 +51,13 @@ VERSION HISTORY
   
   <body> <!-- <body> style defined in CSS -->
     <div id="divContainer">
+       <div id="statusWindow" style="dislplay:none;"></div>
       
        <div id="divMenu"> <!-- height: 18px; -->
-        New Tab: <a id="linkJisho" href="">Jisho.org</a>
-        , Window: 
-         <button id="btnWindow">Wide</button>
-         
+        Tab: <a id="aJisho" href="">Jisho.org</a>
+        , <a id="aGitHub" href="">GitHub</a>
+        , Window: <button id="btnWindow">Wide</button>
+        
          <i id="spinner" class="fa fa-spinner fa-pulse fa-lg" style="height:10px;float:right;"></i>
          , Theme: <button id="btnTheme">Light</button>
        </div>
@@ -69,10 +70,12 @@ VERSION HISTORY
        
        <!-- Iframe buttons -->
        <ul id="ifControls">
-           <li><a id="aBack"    href="">Back</a></li>
-           <li><a id="aForward" href="">Forward</a></li>
-           <li><a id="aTop"     href="">Top</a></li>
-           <li><a id="aHome"    href="">Home</a></li>
+           <li><a id="aBack"      href="">Back</a></li>
+           <li><a id="aForward"   href="">Forward</a></li>
+           <li><a id="aTop"       href="">Top</a></li>
+           <li style="display:none;"><a id="aHome"    href="">Home</a></li>
+           <li><a id="aAdvSearch" href="">Adv Search</a></li>
+           <li><a id="aLink"      href="">Copy Link</a></li>
        </ul>
     </div>
 
