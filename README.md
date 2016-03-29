@@ -16,11 +16,13 @@ If you wish to install this extension, you will need to do the following:
 ## Usage
 To use it:
 - click the new Jisho extension button to access the site in a popup/popover window
-- select text and then using the right-click context menu to search Jisho.org with that text
+- right-click context menu to search Jisho.org with that text
+- seed extension Jisho.org lookup with page-selected text or last searched word
 - Use menu bar (very top) to change preferences
+- Use menu bar (very bottom) to navigate
 
 
-## Additional Features
+## Additional Features - Top Menu
 Popup/popover window has two settings: Wide and Narrow (Mobile and Small Tablet sized viewing)
  - Settings are saved so that using the extension again uses the saved viewing settings.
  - "Draw" and "Radical" features work in both view settings.
@@ -31,12 +33,20 @@ Popup/popover window theme has two settings: Light and Dark
  - Dark theme suggestions/bugs to wktk [AT] wekateka [DOT] com
  - Light theme are Jisho.org defaults
 
+Open Jisho in a new tab.
+
+
+## Additional Features - Bottom menu
+Navigate forward and backwards through searches made in one session (non-closing of extension)
+Scroll to top for faster access to search bar.
+Go to Jisho.org homepage within extension.
+
 
 ## Chrome Permissions
  - Access to all websites and its contents: Allows for content script injection which allows CSS modifying and right-click text selection seeding
  - Access to tabs: Same as above.
  - Access to context menu: This is the right-click menu
- - Access to Chrome/local storage: Used for storing window size and theme preferences.
+ - Access to Chrome/local storage: Used for storing window size and theme preferences and last search save.
 
 
 ## Credits and Chrome Web Store
@@ -49,7 +59,7 @@ Dark theme credits go to wekateka. Copyright: CC BY-SA 4.0. Slight modifications
 
 ## Known Extension Behaviors and Issues
  - "Draw" feature in popover window does not work if window size was recently changed. Usually when the window starts as "Narrow" and then is changed to "Wide." This doesn't appear to be a problem if the window size starts as "Wide." As a workaround, please close the extension window and open it again (window size is saved as a preference) to use "Draw." The "radical" search feature appears to work fine in either starting window size.
- - While dark theme is set, searches in the extension start off Light and then go Dark where the speed of this happening can vary. This happens for me when I am not using stylish or any CSS injecting extension. When the iframe document is loaded, the content script injected makes a call to the extension to see which theme should be used based on user settings. The extension then tells the document, with the content-script injected, to update its theme. It takes some time but should be quick as resources/extension is local - experience can vary based on PC's technical specs. Perhaps the desired effect will occur more gracefully with another extension. I've tried stylish and it doesn't seem to affect iframes used inside of another extension.
+ - While dark theme is set, searches in the extension start off Light and then go Dark where the speed of this happening can vary. This happens for me when I am not using stylish or any CSS injecting extension. When the iframe document is loaded, the content script injected makes a call to the extension to see which theme should be used based on user settings. The extension then tells the document, with the content-script injected, to update its theme. It takes some time but should be quick as resources/extension is local - experience can vary based on PC's technical specs. Perhaps the desired effect will occur more gracefully with another extension. I've tried stylish and it doesn't seem to affect iframes used inside of another extension. Code is available on GitHub, please let me know if you see a more efficient way to handle this.
  
  
  ## Discussion and Feedback
