@@ -7,7 +7,6 @@
 /* TESTING CSS LOAD */
 /* body { background-color: black; } */
 
-
 /* ----------------
    Dark body theme 
    ----------------
@@ -17,5 +16,76 @@
     background-color: black;
 }
 
-a.dark:link { color: orange; }
-a.dark:visited { color: orange; }
+/* a.dark:link, a.dark:visited { color: orange; } /* Use blue in dark mode as well */
+
+
+/*
+ * --------------
+ * Height and Width Customizations
+ * --------------
+ */
+
+/* Default = Wide */
+body {
+    height: 580px;
+    width: 495px;
+}
+
+iframe {
+    /* height: 560px; /* Remove 20px for bottom navigation bar */
+    height: 540px;
+    width: 495px;
+    border: none;
+}
+
+/* Customized option: Narrow = Small iPhone size */
+
+body.narrow {
+    height: 500px;
+    width: 335px;
+}
+
+iframe.narrow {
+    height: 480px;  /* Remove 18px for bottom navigation bar */
+    width: 335px;
+}
+
+
+/* Popup */
+
+div#searchSite { /* Div containing <iframe> */
+    padding:0px; /* Fit in as musch of the iframe as possible */
+    overflow: hidden;
+}
+
+a:link, a:visited { color: #546dff; }
+
+/* 
+ * -----------------
+ * <iframe> Controls
+ * -----------------
+ *
+ * References:
+ *  http://www.goldenapplewebdesign.com/css-equally-spaced-horizontal-elements/
+ */
+
+#ifControls {
+    text-align: justify;
+    padding: 2px;
+    margin: 0px;
+    height: 18px;
+    
+}
+#ifControls li {
+  display: inline-block;
+}
+
+#ifControls li a {
+    text-decoration: none;
+}
+
+#ifControls:after {
+  content: '';
+  width: 100%; /* Ensures justification for single lines */
+  display: inline-block;
+}

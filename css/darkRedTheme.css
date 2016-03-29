@@ -691,4 +691,27 @@ h1.logo a {
   }
 }
 
+/* Set the following to background: #222 */
+
+.accordion dd>.content.active, .f-dropdown, .f-dropdown.drop-right, .f-dropdown.drop-left, .f-dropdown.drop-top, .f-dropdown.content, fieldset legend, .joyride-expose-wrapper, [data-magellan-expedition], [data-magellan-expedition-clone], .pricing-table .description, .pricing-table .bullet-item, .pricing-table .cta-button, .reveal-modal, dialog, .switch label:after, .switch label:after, table, .admin_section, .add_to_list_adder, form.search .input_methods{
+ background-color: #222;
+}
+
+/* Little extra style */
+
+.input_methods {
+    border: 1px solid #EFB26C;
+}
+
+.tabs .tab-title.active a {
+    background-color: #222;
+    color: #FFFFFF
+}
+
+
+.fact {
+background: #222;
+border: 3px solid #EFB26C;
+}
+
 /*}*/

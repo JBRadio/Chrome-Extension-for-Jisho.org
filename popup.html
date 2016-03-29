@@ -8,22 +8,30 @@ http://jisho.org/forum/56eaf070d5dda72227000349-unofficial-jisho-dot-org-chrome-
 
  Helps to quickly search Jisho.org by either
   (A) using the iframe in the browser-action Google Chrome Extension or
-    Purpose: allows the user to access nearly all features of the website without opening a page.
+    Purpose: allows the user to access nearly all features of the website without opening a page/tab.
   (B) selecting text and then using the right-click context menu to search Jisho.org with that text
     Purpose: convenience; similar to Google Custom Search Engine just without typing
   (C) selecting text and then clicking extension to seed popup.html's Jisho.org search value
+  (D) Extension will remember the last search word and use it when opening the extension again.
  
 Chrome Extension Type: Browser Action
 
+NOTEWORTHY
+ - Some features may not work on Google pages (text selection for example)
+
 VERSION HISTORY
- - Menu bar
+ - Top/Bottom Menu bar
     - Radio buttons are replaced with buttons that change value to save space.
+    - Bottom menu bar added: Back, Forward, Top, Home
  - Content Script
     - Seeds iframe src URL on extension launch
     - Overrides CSS by injected "darkRedTheme.css" based on preferences
+    - Removes ads that don't scale with desktop browser windows at small widths. (Overflow)
  - Extension onClick
-    - Content script allows for text selection to seed Jisho.org search lookup
-    - Chrome storage holds user preferences (Window size, Light/Dark Theme preference)
+    - Content script allows for text selection and last search word to seed Jisho.org search lookup
+ - Chrome Storage
+    - Holds user preferences (Window size, Light/Dark Theme preference)
+    - Holds last searched word settings
  - Made Iframe launched on document ready.
    - Extension window should appear quicker.
    - Font-Awesome spinner displays in the corner until iframe document.ready function fires.
@@ -41,10 +49,11 @@ VERSION HISTORY
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
   </head>
   
-  <body style="height:580px; width:495px;">
+  <body> <!-- <body> style defined in CSS -->
     <div id="divContainer">
-       <div id="divMenu">
-        Go to <a id="linkJisho" href="">Jisho.org</a>
+      
+       <div id="divMenu"> <!-- height: 18px; -->
+        New Tab: <a id="linkJisho" href="">Jisho.org</a>
         , Window: 
          <button id="btnWindow">Wide</button>
          
@@ -56,7 +65,15 @@ VERSION HISTORY
           <!-- Now inserted via DOM ready function
            <iframe sandbox="allow-same-origin allow-forms allow-scripts" seamless="" src="http://jisho.org/" style="border:none; width:495px;height:540px;"></iframe>
            -->
-       </div>   
+       </div>
+       
+       <!-- Iframe buttons -->
+       <ul id="ifControls">
+           <li><a id="aBack"    href="">Back</a></li>
+           <li><a id="aForward" href="">Forward</a></li>
+           <li><a id="aTop"     href="">Top</a></li>
+           <li><a id="aHome"    href="">Home</a></li>
+       </ul>
     </div>
 
 <!-- JQUERY, FontAwesome Spinner -->
