@@ -1,0 +1,151 @@
+
+Table of Contents
+  KNOWN ISSUES
+  THOUGHTS / IMPROVEMENTS
+  COMPLETED
+
+------------
+KNOWN ISSUES 
+------------
+
+++ <iframe> Functionality (Loading, CSS, Buttons interacting with <iframe>, Content Script)
+
+++ Session Persistence (New session of the extension doesn't remember what happened in the old session)
+    #. Search bar typed characters aren't remembered on launch
+    #. "Back" page history isn't remembered (window.history.back())
+
+
+<iframe> Functionality (Loading, CSS, Buttons interacting with <iframe>, Content Script)
+----------------------
+
+
+Session Persistence (New session of the extension doesn't remember what happened in the old session)
+-------------------
+
+   Issue: Search bar typed characters (typed in a previous session) aren't remembered on launch
+      If you typed something into the search bar within the extension, closed the extension in any way, and 
+      then opened the extension, your typed text in the searchbar will be gone. This is not saved. Instead
+      the <iframe> URL will be seeded in one of the following conditions: Text selection from page > Last
+      loaded search page results > Jisho.org homepage (default).
+     Workaround:
+      (i) Use a save method outside of the extension
+          - Copy text from searchbar into another editor to save progress.
+     Potential Dev Soluions:
+      (A) Add an event listener to the injected DOM, something like window.unload or window.beforeunload, 
+           to chrome.runtime.sendMessage and update the local storage value for something like "lastTyped"
+     Cons:
+      (A) How does the window.unload event tell the difference between recently typed text and the current   
+           input text? Could the event not work because Chrome closes the extension before a message is 
+           handled on the extension side?
+           
+           - Auto-save typed search
+     Add an event listener to the input box on the Content Script
+      On change, a chrome.runtime.sendMessage fires and is retrieved by the extension
+       Popup.js processes the message and stores the data in lastTyped
+     When the extension loads, first we check to seed the first URL <iframe> opens by
+      #. Text selection > Last Typed > Last loaded search > Jisho.org
+       If no page text found, check the saved "lastTyped"
+        If no "last Typed, check the last loaded search
+         If no "lastSearched", default to Jisho.org
+       If text selected and last typed, confirm, before loading the <iframe> if the user would like text
+        selection or lastTyped.
+         - Alternatively, we could add an action sheet item to "Open last typed search" or something like that
+           
+           
+           
+   Issue: "Back" page history isn't remembered (window.history.back())
+      If you've used the extension before and started it again, the "Back" button will only work on new
+      pages loaded in that session.
+     Workaround:
+      (i) If you've logged into Jisho.org, you will have a list of recent searches on the bottom of the page.
+     Potential Dev Solutions:
+      (A) Keep track of loaded pages, between 5-10, in local storage. 
+           When loaded pages are tracked:
+            - When the extension loads and text selection is present.
+            - When the user searches for new terms.
+           When loaded pages are not tracked:
+            - When the back or forward button is pressed.
+               * Compare the loaded page to our history. If it is there, don't save or change its position.
+           When the back button is clicked:
+            - When check to see if the <iframe> has a history to use (window.history.back())
+            - Secondly, we default to local storage:
+              * We get the current URL, compare it to the position in local storage and go back if
+                we have an earlier saved page.
+      (B) Create a link in the bottom bar called History (Only works with logged in account)
+           When clicked, the content script gathers "Most Recent Searches" and sends to Popup.js.
+            Then, Popup.js displays a <ul><li> of the search terms which the user can click.
+           local storage. 
+
+
+
+-----------------------
+THOUGHTS / IMPROVEMENTS
+-----------------------
+
+ ++ Options page
+ ++ Bottom bar for additional features as links
+ ++ If <iframe> takes a considerable time to load jisho.org on extension open
+
+
+   - If <iframe> takes a considerable time to load jisho.org on extension open, 
+      consider using a persistent background html page (background.html) to host the <iframe>
+      in the background and allow popup.html to adopt and/or clone the <iframe> node on the 
+      popup.html page.
+       Pros: Hopefully the loading of Jisho.org website is as short as possible consistently. 
+             Also, last search results will appear when the extension opens and no current-tab 
+             selected text is present.
+       Cons: Persistent background.html will have an active process, which means that everything
+             loading in the <iframe> or Jisho.org will continue to do so in the background. This
+             will include advertisements I assume. 
+       References:
+             Google Background Pages: https://developer.chrome.com/extensions/background_pages
+             Adopt/Clone iFrame Node Discussion: https://groups.google.com/a/chromium.org/forum/#!topic/chromium-extensions/us2cUTZl5ws
+             DevDocs Clone: http://devdocs.io/dom/node/clonenode
+             DevDocs Adopt: http://devdocs.io/dom/document/adoptnode
+ 
+  - Bottom bar for additional features as links
+     Action sheet: When a user clicks a bottom link, a <div><ul> appears at the bottom for them to 
+      choose additional options.
+       Go (Back, Forward, Top, Advanced Search Options, Forum, Open in a new Tab)
+       Share (Bookmark, Copy link, Gmail/Email)
+       Search (Text Selection, Last Characters Typed, Last Search Loaded)
+       History (List Search Results (logged in feature) )
+       - Maybe replace with icons
+         Clock = History (<- = Back, -> = Forward)
+       
+     UI: 
+          - Safari has on bottom: (Share), (Bookmarks), and (Switch tabs)
+          - Chrome has on top: omnibox, tabs, "..." (More)
+          - Bookmark: Bookmarks the current page
+          - Open in a new tab: - Opens the current page in a new tab 
+           (maybe user wants to use bookmarklet or something else.
+
+  - Options page
+     Allow users to set theme there rather than a toggle if it helps reduce the amount of white CSS flashing.
+     Other ideas...
+ 
+ 
+ ---------
+ COMPLETED
+ ---------
+ 
+ ++ <iframe> Functionality
+    #. Dark Theme: Original CSS shows first and then switches to dark (flashing of original CSS)
+ 
+ <iframe> Functionality (Loading, CSS, Buttons interacting with <iframe>, Content Script)
+ ----------------------
+
+    Issue: Dark Theme: Original CSS shows first and then switches to dark (flashing of original CSS)
+        When the url/webpage loads in the <iframe>, the content script is injected. The chrome local
+        stroage API is accessed to check the currently set saved theme. If the theme is dark, the response
+        will inject the CSS theme to overwrite the original CSS. The speed of this happening could vary
+        in each page load. Often the result is a "flash" of original CSS and then a change to the Dark
+        theme.
+    Dev Comments:
+        Previously we used chrome.runtime.sendMessage to communicate with the local stroage API. This was
+        unecessary overhead. We now call the local storage API directly when executing the content script.
+        This is much faster and hopefully to the point where this is satisfactory for most users. If there
+        are slow loading times for the CSS, confirm that other factors such as internet speeds aren't
+        affecting <iframe> and javascript performance.
+    Completed: 2016.03.30
+ 

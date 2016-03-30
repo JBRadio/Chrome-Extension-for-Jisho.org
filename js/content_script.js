@@ -166,13 +166,28 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 // #.) Targeting injected script in <iframe>; Make sure hostname is Jisho.org before processing
 if ( document.location.host == "jisho.org" ) {
     
-    // #.) Send a message to popup.js to indicate that a content script was added
-    //      popup.js will then call "changeThemeDark" if necessary
-    chrome.runtime.sendMessage({method: "checkCurrentTheme"}, function(response) {
-        // DEBUG:
-        //console.log("Content_script.js - Received response for checkCurrentTheme");
-        //console.log("Content_script.js - Response received: " + response );
-    });
+    // Call local storage function directly to see if we should use a dark theme on loaded pages
+    // in <iframe> or stick to Jisho.org theme ("Light")
+    chrome.storage.local.get("theme", function (result) {
+           
+           // #.) No set theme = undefined so make it the default CSS style (Light).
+           var theme;
+           
+           if ( result.theme == undefined || result.theme == "" || result.theme.length == 0 )
+               theme = "Light"; // default
+           else
+               theme = result.theme;
+           
+           if ( theme == "Dark" ) {
+               // #.) Create <link> tag to add dark theme CSS file to the DOM
+               // *** copied from function themeClicked(themeClicked) - should be the same ***
+                var cssLink = document.createElement("link");
+                    cssLink.href = chrome.extension.getURL("/css/darkRedTheme.css"); 
+                    cssLink .rel = "stylesheet";
+                    cssLink .type = "text/css";
+                    document.head.appendChild(cssLink);
+           }
+       });   
 }
 
 // Change display on Ads to none as they do not size to mobile widths (at least for desktop browsing).

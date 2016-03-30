@@ -691,27 +691,32 @@ h1.logo a {
   }
 }
 
-/* Set the following to background: #222 */
+/* Set background:white; or background:#FFFFFF; to background: #222 */
 
-.accordion dd>.content.active, .f-dropdown, .f-dropdown.drop-right, .f-dropdown.drop-left, .f-dropdown.drop-top, .f-dropdown.content, fieldset legend, .joyride-expose-wrapper, [data-magellan-expedition], [data-magellan-expedition-clone], .pricing-table .description, .pricing-table .bullet-item, .pricing-table .cta-button, .reveal-modal, dialog, .switch label:after, .switch label:after, table, .admin_section, .add_to_list_adder, form.search .input_methods{
- background-color: #222;
+.accordion dd>.content.active, .f-dropdown, .f-dropdown.drop-right, .f-dropdown.drop-left, .f-dropdown.drop-top, .f-dropdown.content, .joyride-expose-wrapper, [data-magellan-expedition], [data-magellan-expedition-clone], .pricing-table .description, .pricing-table .bullet-item, .pricing-table .cta-button, .reveal-modal, dialog, .switch label:after, .switch label:after, .admin_section, .add_to_list_adder {
+    background-color: #222;
 }
 
 /* Little extra style */
 
-.input_methods {
-    border: 1px solid #EFB26C;
+.f-open-dropdown li:hover, .f-open-dropdown li:hover a { 
+    /* On a search result page, "Links" may appear under the search result items. If you hover over it, a dropdown will appear. The dropdown's background is white but fixed above. When hovering over the dropdown item list, the hover attribute makes the background light gray. */
+    background-color: #905E5C;
+    text-shadow: 1px 1px #000000;
 }
 
-.tabs .tab-title.active a {
+form.search .input_methods { /* Fix hovering mobile tools: Draw, Radical, Voice */
     background-color: #222;
-    color: #FFFFFF
-}
+    border: 1px solid #EFB26C;
+  }
 
-
-.fact {
+.fact { /* Fix Grammar notes box on search results page */
 background: #222;
 border: 3px solid #EFB26C;
+}
+
+.text_input .selected { /* Character highlight issue when you click "All" next to searchbar */
+    background: #863B2F; /* WebKit/Blink Browsers */
 }
 
 /*}*/

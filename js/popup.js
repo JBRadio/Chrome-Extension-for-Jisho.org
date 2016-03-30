@@ -5,52 +5,30 @@
  * Jisho Forum Post
  * http://jisho.org/forum/56eaf070d5dda72227000349-unofficial-jisho-dot-org-chrome-extension-chrome-developer-mode
  *
- * Search Jisho.org
+ * Unofficial Jisho.org Extension
  *  - On Extension load, an <iframe> is seeded with a URL in the following order:
       1. Selected text found on the current active tab's document
       2. Last search text criteria used
       3. Default is the homepage if you've never searched using the extension before.
+      
  *  - Use features of Jisho.org within <iframe>
       1. Search bar with Advanced Search (#words)
       2. Draw (Free-hand drawing)
       3. Radical (Bushu)
- *  - Bottom extension body links allow you to go back/forward, to the top, and to the Jisho homepage
+      
+ *  - Bottom extension body links allow you to manipulate the <iframe>
+      1. go back/forward
+      2. scroll to the top (calls .focus() on input text field)
+      3. change url to specific pages (Advanced Search Options)
+      
+ *  - Bottom extension body links allows additional functionality
+      1. Copy Link: Copy current <iframe> url to clipboard for pasting (sharing and other uses)
  *
  * Use of Chrome Storage
     - User preference for theme and extension window size
     - Last search word with/out Advanced Search Options
  *
  * Dark/Jisho Yoake Theme modified from https://userstyles.org/styles/115621/jisho (see css file)
- *
- * THOUGHTS / IMPROVEMENTS
-   - If <iframe> takes a considerable time to load jisho.org on extension open, 
-      consider using a persistent background html page (background.html) to host the <iframe>
-      in the background and allow popup.html to adopt and/or clone the <iframe> node on the 
-      popup.html page.
-       Pros: Hopefully the loading of Jisho.org website is as short as possible consistently. 
-             Also, last search results will appear when the extension opens and no current-tab 
-             selected text is present.
-       Cons: Persistent background.html will have an active process, which means that everything
-             loading in the <iframe> or Jisho.org will continue to do so in the background. This
-             will include advertisements I assume. 
-       References:
-             Google Background Pages: https://developer.chrome.com/extensions/background_pages
-             Adopt/Clone iFrame Node Discussion: https://groups.google.com/a/chromium.org/forum/#!topic/chromium-extensions/us2cUTZl5ws
-             DevDocs Clone: http://devdocs.io/dom/node/clonenode
-             DevDocs Adopt: http://devdocs.io/dom/document/adoptnode
- *
-  - Bottom bar for additional features as links
-     UI: 
-          - Safari has on bottom: (Share), (Bookmarks), and (Switch tabs)
-          - Chrome has on top: omnibox, tabs, "..." (More)
-*     
-  - Prevent flash of original CSS in Dark Theme
-*     
-  - Options page
-     Allow users to set theme there rather than a toggle if it helps reduce the amount of white CSS flashing.
-     Other ideas...
- *           
- *
  */
 
   // Global Variables
@@ -111,7 +89,7 @@
       $('#statusWindow').html(statusText);
       
       // 2.) JQUERY - Slide down status window  
-      $('#statusWindow').slideDown( 1000, function() {
+      $('#statusWindow').slideDown( 1500, function() {
               $("#statusWindow").slideUp(500);
           });
   }
@@ -218,6 +196,7 @@
          // ------------------------------------
          // Event Listeners (Top menu bar)
          // ------------------------------------
+       
          $('#aJisho').on('click', function() {
             window.open('http://jisho.org'); 
          });
@@ -225,8 +204,8 @@
          $('#aGitHub').on('click', function() {
              window.open('https://github.com/JBRadio/Chrome-Extension-for-Jisho.org');
          });
-
-
+       
+       
         $('#btnWindow').on('click', function() {
 
             // UPDATE WINDOW SIZE
@@ -435,22 +414,11 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse) {
     // DEBUG:
     //console.log("Popup.js received a message: " + request.method);
     
-    // DARK THEME
     
     // #.) Determine if the incoming message should be processed by popup.js
     switch (request.method )
     {
-        case "checkCurrentTheme":
-         
-        // #.) Determine if we should update the theme
-        //     - This processing block should only be called once when the extension opens.
-        //     - Default is Light so only check for Dark
-        var theme = document.getElementById('btnTheme').innerHTML;
-        
-        var objArg = {method: "themeClick"};
-            objArg.data = theme == "Light" ? "Light" : "Dark";
-            chrome.runtime.sendMessage(objArg);
-            break;
+        // Insert cases here.
             
         default:
             //console.log("Popup.js will not process " + request.method);
