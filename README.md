@@ -20,6 +20,7 @@ To use it:
 - seed extension Jisho.org lookup with page-selected text or last searched word
 - Use menu bar (very top) to change preferences
 - Use menu bar (very bottom) to navigate
+- Theme set in the extension will also be set for Jisho.org website when viewed in the tabs of the main browser window (located outside the extension).
 
 
 ## Additional Features - Top Menu
@@ -63,9 +64,18 @@ Dark theme credits go to wekateka. Copyright: CC BY-SA 4.0. Slight modifications
 
 ## Known Extension Behaviors and Issues
  - "Draw" feature in popover window does not work if window size was recently changed. Usually when the window starts as "Narrow" and then is changed to "Wide." This doesn't appear to be a problem if the window size starts as "Wide." As a workaround, please close the extension window and open it again (window size is saved as a preference) to use "Draw." The "radical" search feature appears to work fine in either starting window size.
- - While dark theme is set, searches in the extension start off Light and then go Dark where the speed of this happening can vary. This happens for me when I am not using stylish or any CSS injecting extension. When the iframe document is loaded, the content script injected makes a call to the extension to see which theme should be used based on user settings. The extension then tells the document, with the content-script injected, to update its theme. It takes some time but should be quick as resources/extension is local - experience can vary based on PC's technical specs. Perhaps the desired effect will occur more gracefully with another extension. I've tried stylish and it doesn't seem to affect iframes used inside of another extension. Code is available on GitHub, please let me know if you see a more efficient way to handle this.
- - Text selection seed does not work. First, if you have just recently reloaded the extension or installed it, refresh the page so that the extension's content script can be injected. If it still continues to fail, check the domain/host to see if it's owned by Google. It may be likely that Google blocks certain actions on its pages. If Google is not the case, please report it in the Jisho.org forum.
+ - Clicking on external links (leads outside of Jisho.org) can be opened in the <iframe>. Functionality has been optimized for pages within the Jisho.org domain. Although the <iframe> will load the external pages, it is suggested to not click on these links in the extension for now. Please click the link and use it in one of the tabs in the main browser window. You can still navigate back to the Jisho.org pages by using the navigation links at the bottom (Back, Adv Search). Submitted forum discussion for webmaster to make all external links open in a new tab which aren't opened in an <iframe>: http://jisho.org/forum/56fc6ae0d5dda719140002d0-please-consider-updating-links-that-lead-outside-jisho-dot-org-to-open-in-a-new-tab
  
  
- ## Discussion and Feedback
- For questions/comments/suggestions please make a post on the Jisho.org forum. Here is the link that introduces the extension: http://jisho.org/forum/56eaf070d5dda72227000349-unofficial-jisho-dot-org-chrome-extension-chrome-developer-mode
+## Considered fixed
+ - While dark theme is set, searches in the extension start off Light and then go Dark where the speed of this happening can vary. On 2016.03.30, chrome local storage API is utilized when the content script is executed. I think this is the faster way to check the theme and inject the CSS overriding file. Code is available on GitHub, please let me know if you see a more efficient way to handle this. At this time, this is considered fixed.
+ 
+ 
+## Discussion and Feedback
+For questions/comments/suggestions please make a post on the Jisho.org forum. Here is the link that introduces the extension: http://jisho.org/forum/56eaf070d5dda72227000349-unofficial-jisho-dot-org-chrome-extension-chrome-developer-mode
+ 
+
+## FAQ (Frequently Asked Questions)
+ - If any piece of functionality doesn't work. Please first reload the page and try again. The content script in the extension may have not been injected properly or at all in the tab if you just installed the extension or reloaded it.
+ - Text selection seeding does not work. First, reload the page for the content script to be properly loaded. If it still continues to fail, check the domain/host to see if it's owned by Google. It may be likely that Google blocks certain actions on its pages. If Google is not the case, please report it in the Jisho.org forum. If you are familiar with the console, please list any errors found that are related to the extension (content_script.js, popup.js).
+ - Theme set in the extension will affect your tabbed browsing experience. Please open the extension and change the theme to set it back or change it.

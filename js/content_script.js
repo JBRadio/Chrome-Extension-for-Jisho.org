@@ -124,8 +124,11 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
         //console.log("Script host: " + document.location.host);
         //console.log("Link clicked: " + linkClicked);
         
-        if ( document.location.host !== "jisho.org" )
-            return; // We should only be performing these methods in the <iframe>
+        // This extension should be used within the Jisho.org domain.
+        //  - If users go outside, they should be able to click Advanced Search as a workaround.
+        //  - I have submitted a forum discussion for the webmaster to make these external links
+        //    open in a new tab (which cannot be opened from an <iframe> and should fix our issue:
+        //    http://jisho.org/forum/56fc6ae0d5dda719140002d0-please-consider-updating-links-that-lead-outside-jisho-dot-org-to-open-in-a-new-tab
         
         switch (linkClicked)
         {
@@ -138,6 +141,9 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
                 break
                 
             case "top":
+                if ( document.location.host !== "jisho.org" )
+                    return; // We should only be performing these methods in the <iframe>
+                
                 // #.) Scroll <iframe> to the Top    
                 window.scroll(0,0);
                 // Return focus to the search bar for an additional search without mouse interaction
