@@ -14,6 +14,8 @@ KNOWN ISSUES
 ++ <iframe> Functionality (Loading, CSS, Buttons interacting with <iframe>, Content Script)
     #. Accessing pages that lead outside of Jisho.org domain can cause issues (Asking admin to review)
 
+++ Google Chrome Extension UI (popup.css, popup.html, resizing extension, device specific, other)
+
 ++ Google Chrome tab browsing (Content script)
     #. Accessing Jisho.org in a tab will take advantage of the theme set in the extension
 
@@ -35,6 +37,29 @@ KNOWN ISSUES
         (B) Modify content script to change all links in Jisho.org's about page to open in a new tab.
         (C) Submit forum discussion for webmaster to make all external links open in a new tab. I have    
             submitted discussion: http://jisho.org/forum/56fc6ae0d5dda719140002d0-please-consider-updating-links-that-lead-outside-jisho-dot-org-to-open-in-a-new-tab
+
+
+    Issue: <iframe> may load an invalid page on startup/seed.
+        Starting the Jisho.org extension may show a Jisho.org webpage that is invalid. Jisho will say that the page you are on doesn't exist. On top of this, it may seem confusing as to what you can do next as the search bar is not present on the error page. Of course, I know you can use the link at the bottom to open another Jisho.org url but it may be too confusing for others. 
+    Workaround:
+        Educate others to make sure that text selections are words or japanese characters. Anything else could ruin the Jisho.org search if not properly filtered.
+    Potential Dev Solutions:
+        (A) If a text selection is to be used, filter/validate it first. Replace all symbols with a space (" "). Then use trim to remove preceeding and trailing spaces. If the remaining text is invalid, resort to the last loaded search page (default when no text selection is found). The invalid reasoning could be logged in console.log(). Text selection may be invalid to search on if trimmed text is:
+         - shortened to less than 3 roman characters
+         - has a length of 0
+        (B) Educate users on Readme.md about text selection seeding and how it could disrupt the Jisho.org extension user's experience.
+    Doesn't break Jisho: ( ) , @
+        Find what breaks Jisho when you can reproduce... use console.log() to report it.
+        
+    Issue 4:
+Dark theme isn't always injected when <iframe> loads a Jisho.org page.
+
+Potential Fix:
+Do the messaging to check for current theme along with Chrome.API for local storage. One is faster than the other but at least the theme will be correct. Even if we inject <style> twice, the Light theme should remove all of them when toggled.
+
+
+Google Chrome Extension UI (popup.css, popup.html, resizing extension, device specific, other)
+--------------------------
 
 
 Google Chrome tab browsing (Content script)
@@ -182,4 +207,30 @@ THOUGHTS / IMPROVEMENTS
         are slow loading times for the CSS, confirm that other factors such as internet speeds aren't
         affecting <iframe> and javascript performance.
     Completed: 2016.03.30
+    Dev Comments:
+        Going to add back the messaging since sometimes we can load our style before the page loads its own. Maybe both methods should allow the dark theme to stay as intended.
+    Additional Comments:
+        Sometimes the direct approach does not load on first try. Have both the direct and messaging approach on the first load only.
  
+ 
+ Google Chrome Extension UI (popup.css, popup.html, resizing extension, device specific, other)
+--------------------------
+
+    Issue: Darker (perhaps VGA monitors) blend dark colors for links on popup.html
+        (Tested with a 15-17 inch VGA monitor) On older monitors (VGA) where colors may not be so vibrant, bright, or defined, it may be hard to see the link colors on a pure black background. 
+    Potential Dev Solutions:
+        Change the color in CSS:
+    /* a.dark:link, a.dark:visited { color: orange; } /* Orange is already used a lot in the extension */
+    a.dark:link, a.dark:visited {color: #54D0FF;} /* Color easier to see on VGA monitors */
+    Completed: 2016.04.01
+        
+    Issue: Extra vertical scrollbars on screens with lower screen resolutions
+        (Tested with a 15-17 inch screen) Smaller screen PC resolutions in combination with smaller vertical screen heights may contribute to the Google Chrome extension appearing with an additional veritical scrollbar next to the iframe's vertical scrollbar - leading to double vertical scrollbars.
+    Potential Dev Solutions:
+        Make changes specific to device height and width in CSS.
+        @media screen and (max-height: 600px) { 
+            iframe { /* Noticed the additional vertical scrollbar with a less resolution monitor */
+                height: 534px;
+            }
+        }
+    Completed: 2016.04.01

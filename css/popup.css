@@ -4,6 +4,20 @@
  *
  */
 
+
+/* ---------------
+   DEVICE SPECIFIC
+ * ---------------
+ */
+
+@media screen and (max-height: 600px) { /* Small vertical resolution */
+    
+    iframe { /* Noticed the additional vertical scrollbar with a less resolution monitor */
+        height: 534px;
+    }
+}
+
+
 /* ----------------
    Dark body theme 
    ----------------
@@ -14,6 +28,7 @@
 }
 
 /* a.dark:link, a.dark:visited { color: orange; } /* Use blue in dark mode as well */
+a.dark:link, a.dark:visited {color: #54D0FF;} /* Color easier to see on VGA monitors */
 
 
 /*

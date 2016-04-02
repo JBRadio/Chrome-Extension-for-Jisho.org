@@ -93,25 +93,27 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
             case "Dark":
                 // #.) Create <link> tag to add dark theme CSS file to the DOM
                 var cssLink = document.createElement("link");
-                    //console.log(chrome.extension.getURL("/css/darkRedTheme.css"));
-                    cssLink.href = chrome.extension.getURL("/css/darkRedTheme.css"); 
+                    //console.log(chrome.extension.getURL("/css/jishoYoake.css"));
+                    cssLink.href = chrome.extension.getURL("/css/jishoYoake.css"); 
                     cssLink .rel = "stylesheet";
                     cssLink .type = "text/css";
                     document.head.appendChild(cssLink);
-                // cssLink.href = "chrome-extension://cpijlhjblmbllnphcaogikhdbdmmofhm/css/darkRedTheme.css";
+                // cssLink.href = "chrome-extension://cpijlhjblmbllnphcaogikhdbdmmofhm/css/jishoYoake.css";
                 break;
 
             case "Light":
                 // #.) Gather all <link> tags
                 var darkCssLink = document.head.getElementsByTagName("link"); // Search only <head>
-
+                console.log(darkCssLink);
+                
                 // #.) Go through all <link> in <head> to determine if we can remove the dark theme <link> tag
                 if ( darkCssLink.length > 0 ) {
-                    for ( var i = 0; i < darkCssLink.length; i++) {
-                        if ( darkCssLink[i].href.indexOf("/css/darkRedTheme.css") > 0 ) {
-                            //console.log("Removed link: " + darkCssLink[i].href);
+                    //for ( var i = 0; i < darkCssLink.length; i++) { // need to go backwards
+                    for ( var i = darkCssLink.length-1; i >= 0; i--) {
+                        if ( darkCssLink[i].href.indexOf("/css/jishoYoake.css") > 0 ) {
+                            console.log("Removed link: " + darkCssLink[i].href);
                             darkCssLink[i].parentNode.removeChild(darkCssLink[i]);
-                            break; // Should only need to remove one <link>
+                            // Do not break, may have injected more than one.
                         }
                     }
                  }
@@ -169,31 +171,48 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 
 // CONTENT SCRIPT - DARK THEME (LOAD CSS) -- Autoload if theme is dark
 
-// #.) Targeting injected script in <iframe>; Make sure hostname is Jisho.org before processing
-if ( document.location.host == "jisho.org" ) {
-    
+function useStorageToChangeTheme() {
     // Call local storage function directly to see if we should use a dark theme on loaded pages
     // in <iframe> or stick to Jisho.org theme ("Light")
     chrome.storage.local.get("theme", function (result) {
            
-           // #.) No set theme = undefined so make it the default CSS style (Light).
-           var theme;
-           
-           if ( result.theme == undefined || result.theme == "" || result.theme.length == 0 )
-               theme = "Light"; // default
-           else
-               theme = result.theme;
-           
-           if ( theme == "Dark" ) {
-               // #.) Create <link> tag to add dark theme CSS file to the DOM
-               // *** copied from function themeClicked(themeClicked) - should be the same ***
-                var cssLink = document.createElement("link");
-                    cssLink.href = chrome.extension.getURL("/css/darkRedTheme.css"); 
-                    cssLink .rel = "stylesheet";
-                    cssLink .type = "text/css";
-                    document.head.appendChild(cssLink);
-           }
-       });   
+       // #.) No set theme = undefined so make it the default CSS style (Light).
+       var theme;
+
+       if ( result.theme == undefined || result.theme == "" || result.theme.length == 0 )
+           theme = "Light"; // default
+       else
+           theme = result.theme;
+
+       if ( theme == "Dark" ) {
+           // #.) Create <link> tag to add dark theme CSS file to the DOM
+           // *** copied from function themeClicked(themeClicked) - should be the same ***
+            var cssLink = document.createElement("link");
+                cssLink.href = chrome.extension.getURL("/css/jishoYoake.css"); 
+                cssLink .rel = "stylesheet";
+                cssLink .type = "text/css";
+                document.head.appendChild(cssLink);
+       }
+    });
+}
+
+// #.) Targeting injected script in <iframe>; Make sure hostname is Jisho.org before processing
+if ( document.location.host == "jisho.org" ) {
+    
+    // Two attempts to get the dark theme right. Extension can be a little weird at times.
+    useStorageToChangeTheme();
+    useStorageToChangeTheme();
+    
+    // Open a persistent connection/port with popup or background.js to communicate with popup.js?
+    
+    /*
+    // Is this faster than chrome storage? // No, no access to chrome.extension.getViews
+    var popupWindows = chrome.extension.getViews({type:'popup'});
+    var popup = popupWindows[0];
+    var theme = popup.getElementById('btnTheme').innerHTML;
+    console.log("Theme from popup: " + theme);
+    themeClicked(theme);
+    */
 }
 
 // Change display on Ads to none as they do not size to mobile widths (at least for desktop browsing).
