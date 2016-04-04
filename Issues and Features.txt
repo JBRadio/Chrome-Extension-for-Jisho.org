@@ -190,6 +190,11 @@ THOUGHTS / IMPROVEMENTS
  
  ++ <iframe> Functionality
     #. Dark Theme: Original CSS shows first and then switches to dark (flashing of original CSS)
+    
+ ++ Google Chrome Extension UI (popup.css, popup.html, resizing extension, device specific, other)
+    #. Darker (perhaps VGA monitors) blend dark colors for links on popup.html
+    #. Extra vertical scrollbars on screens with low monitor vertical screen resolutions (VGA)
+    
  
  <iframe> Functionality (Loading, CSS, Buttons interacting with <iframe>, Content Script)
  ----------------------
@@ -206,7 +211,7 @@ THOUGHTS / IMPROVEMENTS
         This is much faster and hopefully to the point where this is satisfactory for most users. If there
         are slow loading times for the CSS, confirm that other factors such as internet speeds aren't
         affecting <iframe> and javascript performance.
-    Completed: 2016.03.30
+    Completed: 2016.03.30, 2016.04.01
     Dev Comments:
         Going to add back the messaging since sometimes we can load our style before the page loads its own. Maybe both methods should allow the dark theme to stay as intended.
     Additional Comments:
