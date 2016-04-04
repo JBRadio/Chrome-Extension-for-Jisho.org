@@ -735,5 +735,28 @@
     color: #efb26c !important;
   }
 
+/* Extra */
+form.search .scroll_indicator {
+    /* When using the Draw, Radical tools, there's a linear gradient used to indicate that you can
+       scroll to the right for more Kanji. Shows as red-to-white. */
+    background: none;
+}
+
+/* Update scrollbars for WebKit browser */
+::-webkit-scrollbar {
+    width: 12px;
+}
+ 
+::-webkit-scrollbar-track {
+    background: rgba(152,110,63,1);
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.7);
+    border-radius: 10px;
+}
+ 
+::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
+    background: rgba(239,178,108,1);
+}
 
 /*}*/

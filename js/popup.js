@@ -113,13 +113,16 @@
            if ( result.theme == undefined || result.theme == "" || result.theme.length == 0 )
                theme = "Light"; // default
            else
-               theme = result.theme;
+               theme = result.theme; // Whatever is saved: Light or Dark
            
            if ( theme == "Dark" )
                document.getElementById('btnTheme').innerHTML = "Dark";
            
            theme == "Light" ? $('body').removeClass("dark") : $('body').addClass("dark");
            theme == "Light" ? $('a').removeClass("dark") : $('a').addClass("dark");
+           
+           if ( document.getElementById('ifJisho') !== null )
+               theme == "Light" ? $('#ifJisho').removeClass('dark') : $('#ifJisho').addClass('dark');
        });
        
        // #.) Get User Preference: WINDOW SIZE
@@ -191,6 +194,11 @@
                });
            });
            
+           document.getElementById('ifJisho').addEventListener("progress", function() {
+               chrome.runtime.sendMessage({method: "delayRunOfUseStorageToChangeTheme"});
+           });
+           
+           
         });
      
          // ------------------------------------
@@ -253,6 +261,9 @@
 
                 // 1b.) Body links colors
                 theme == "Light" ? $('a').removeClass("dark") : $('a').addClass("dark");
+                
+                // 1c.) Update iframe background color
+                theme == "Light" ? $('#ifJisho').removeClass('dark') : $('#ifJisho').addClass('dark');
 
                 // 2.) Update iFrame's CSS to use theme
                 // ------------------------------------

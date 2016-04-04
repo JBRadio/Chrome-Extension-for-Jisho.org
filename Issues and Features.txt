@@ -202,7 +202,7 @@ THOUGHTS / IMPROVEMENTS
     Issue: Dark Theme: Original CSS shows first and then switches to dark (flashing of original CSS)
         When the url/webpage loads in the <iframe>, how do we make sure the dark theme is applied first or that it overrides the current CSS by being the one loaded after? How fast can we do this (seamless)?
         The speed of this happening could vary in each page load. Often the result is a "flash" of original CSS and then a change to the Dark theme.
-    Fix: Use all events without a do...while loop
+    Fix: Use all events without a do...while loop, <iframe> background-color
         Events that we can work with: (We'll use all of them)
          1. Content Script.js - Applied when the content script is injected into the DOM via Chrome 
             Extension. We have access to the <iframe> DOM at this point and can manipulate directly.
@@ -217,6 +217,9 @@ THOUGHTS / IMPROVEMENTS
                        listener
                     2. Use the "sendResponse", from .onMessage listener, function to directly send back
               On both message types, we run a check on storage preferences to see if we can load faster than <iframe>'s load event.
+       Popup.html changes
+        1. Change the background of the iframe loading pages to white or black based on theme. It has been
+           proven that the background color of the <iframe> can blink in while the page is loading.
               
         When inserting the JishoYoake theme: (with access to DOM / Content script)
          1. Gather the <link> tags

@@ -50,6 +50,8 @@ iframe {
     border: none;
 }
 
+iframe.dark { background-color: black; }
+
 /* Customized option: Narrow = Small iPhone size */
 
 body.narrow {
