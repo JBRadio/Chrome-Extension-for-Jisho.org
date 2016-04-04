@@ -419,6 +419,13 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse) {
     switch (request.method )
     {
         // Insert cases here.
+        case "delayCheckForDarkTheme":
+            // Delayed messaging attempt to apply dark theme before iframe's load event.
+            chrome.runtime.sendMessage({method: "delayRunOfUseStorageToChangeTheme"});
+            
+            // Also send response so that original sender can check for dark as well
+            sendResponse("Check"); // Content Script.js - chrome.runtime.sendMessage({method: "delayCheckForDarkTheme"}
+            break;
             
         default:
             //console.log("Popup.js will not process " + request.method);

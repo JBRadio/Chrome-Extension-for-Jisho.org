@@ -200,22 +200,67 @@ THOUGHTS / IMPROVEMENTS
  ----------------------
 
     Issue: Dark Theme: Original CSS shows first and then switches to dark (flashing of original CSS)
-        When the url/webpage loads in the <iframe>, the content script is injected. The chrome local
-        stroage API is accessed to check the currently set saved theme. If the theme is dark, the response
-        will inject the CSS theme to overwrite the original CSS. The speed of this happening could vary
-        in each page load. Often the result is a "flash" of original CSS and then a change to the Dark
-        theme.
-    Dev Comments:
-        Previously we used chrome.runtime.sendMessage to communicate with the local stroage API. This was
-        unecessary overhead. We now call the local storage API directly when executing the content script.
-        This is much faster and hopefully to the point where this is satisfactory for most users. If there
-        are slow loading times for the CSS, confirm that other factors such as internet speeds aren't
-        affecting <iframe> and javascript performance.
-    Completed: 2016.03.30, 2016.04.01
-    Dev Comments:
-        Going to add back the messaging since sometimes we can load our style before the page loads its own. Maybe both methods should allow the dark theme to stay as intended.
-    Additional Comments:
-        Sometimes the direct approach does not load on first try. Have both the direct and messaging approach on the first load only.
+        When the url/webpage loads in the <iframe>, how do we make sure the dark theme is applied first or that it overrides the current CSS by being the one loaded after? How fast can we do this (seamless)?
+        The speed of this happening could vary in each page load. Often the result is a "flash" of original CSS and then a change to the Dark theme.
+    Fix: Use all events without a do...while loop
+        Events that we can work with: (We'll use all of them)
+         1. Content Script.js - Applied when the content script is injected into the DOM via Chrome 
+            Extension. We have access to the <iframe> DOM at this point and can manipulate directly.
+              Check Chrome storage for active preference and then apply light/dark theme.
+         2. Attach Javascript event listener to Popup.js' <iframe>'s load event.
+              Check Chrome storage for active preference and then send a chrome.runtime message for the 
+              content script to process and apply the theme to the document.
+         3. Content Script.js / Popup.js - Messaging
+              Create a message, on injection, to background.js/popup.js which will trigger two methods
+                 Popup.js, on message received:
+                    1. Send a chrome message which the content script will receive in its .onMessage 
+                       listener
+                    2. Use the "sendResponse", from .onMessage listener, function to directly send back
+              On both message types, we run a check on storage preferences to see if we can load faster than <iframe>'s load event.
+              
+        When inserting the JishoYoake theme: (with access to DOM / Content script)
+         1. Gather the <link> tags
+         2. Loop through the <link> tags and determine if: (non-button click)
+              a. the original CSS has loaded
+              b. our custom Jisho Yoake theme has loaded
+         3. Insert the JishoYoake theme
+              a. (non-button click) only if the original theme has loaded and our custom one hasn't.
+            
+         *** Consider putting in a <style>body{background-color:black}</style> if theme is dark we cannot
+         load our JishoYoake theme because the original hasn't been added yet.
+         
+        When removing the JishoYoake theme: (only processed from button click)
+         1. Gather the <link> tags
+         2. Loop through the <link> tags ** Backwards **
+         3. Remove all instances where our custom JishoYoake theme was found.
+         
+         *** Consider removing any custom <style> tags.
+        
+        
+    Additional Strategies on applying the dark theme to the <iframe>
+        // Try:
+        // Don't inject dark until the original Jisho.org CSS has been loaded. 
+        //  A. Use do...while loop to check if original Jisho CSS has loaded and inject.
+        //  B. Create a setTimeout if original CSS non-existent to check storage again.
+
+        // Try:
+        // Removing original CSS file and adding JishoYoake and vice versa
+        //  A. Remove original jisho css on dom ready and on content script injection storage check
+        //  B. Remember to add original theme when toggling to "Light"
+        //      Add the original CSS Jisho file (hardcode) and remove dark CSS file references
+        //  Cons: Http load for original CSS file may take a sec... maybe create a <style> load event to remove dark CSS
+
+        // Open a persistent connection/port with popup or background.js to communicate with popup.js?
+
+        /*
+        // Is this faster than chrome storage? // No, no access to chrome.extension.getViews
+        var popupWindows = chrome.extension.getViews({type:'popup'});
+        var popup = popupWindows[0];
+        var theme = popup.getElementById('btnTheme').innerHTML;
+        console.log("Theme from popup: " + theme);
+        themeClicked(theme);
+        */
+    Completed: 2016.04.04
  
  
  Google Chrome Extension UI (popup.css, popup.html, resizing extension, device specific, other)

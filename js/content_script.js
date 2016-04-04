@@ -33,6 +33,10 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
             }
             themeClicked(request.data);
             break;
+            
+        case "delayRunOfUseStorageToChangeTheme":
+            useStorageToChangeTheme(); // Delay A: Another message is received to check Dark Theme.
+            break;
         
             
         // CONTENT SCRIPT - BACK, FORWARD, TOP, HOME (EVENT LISTENER) << MESSAGE INBOUND >>
@@ -83,6 +87,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     
     
     function themeClicked(themeClicked) {
+        // Only used via popup.js button click
         // themeClicked = "Light" || "Dark";
         
         if ( document.location.host !== "jisho.org" )
@@ -172,6 +177,9 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 // CONTENT SCRIPT - DARK THEME (LOAD CSS) -- Autoload if theme is dark
 
 function useStorageToChangeTheme() {
+    // Different than button click, we don't care for the Light theme in this case.
+    //  Used on content script methods that are invoked on injection.
+    
     // Call local storage function directly to see if we should use a dark theme on loaded pages
     // in <iframe> or stick to Jisho.org theme ("Light")
     chrome.storage.local.get("theme", function (result) {
@@ -185,13 +193,43 @@ function useStorageToChangeTheme() {
            theme = result.theme;
 
        if ( theme == "Dark" ) {
-           // #.) Create <link> tag to add dark theme CSS file to the DOM
-           // *** copied from function themeClicked(themeClicked) - should be the same ***
-            var cssLink = document.createElement("link");
-                cssLink.href = chrome.extension.getURL("/css/jishoYoake.css"); 
-                cssLink .rel = "stylesheet";
-                cssLink .type = "text/css";
-                document.head.appendChild(cssLink);
+           
+           var linkTags;
+           var foundJishoCSS = false;
+           var foundJishoDark = false;
+           var time = Date.now(); // Uses milliseconds
+           var timeout = 10000; // 10 * 1000 milliseconds = 10 seconds
+           
+           
+           //do - do loop kills our extension sometimes... try again later if needed.
+           //{
+               linkTags = document.getElementsByTagName('link');
+               
+               for (var i = 0; i < linkTags.length; i++)
+               {
+                   if ( linkTags[i].rel == "stylesheet" ) { 
+                       
+                       if ( linkTags[i].href.indexOf("/assets/") !== -1 )
+                           foundJishoCSS = true; // Site's original CSS file loaded
+                   
+                        if ( linkTags[i].href.indexOf("/css/jishoYoake.css") !== -1 )
+                            foundJishoDark = true; // Our custom CSS file loaded already
+                   }
+               }
+           
+           // JishoYoake is meant to override and not be overridden by NOT being last in the heirarchy.
+           if ( foundJishoCSS == true && foundJishoDark == false ) 
+           {
+                // #.) Create <link> tag to add dark theme CSS file to the DOM
+                       // *** copied from function themeClicked(themeClicked) - should be the same ***
+                        var cssLink = document.createElement("link");
+                            cssLink.href = chrome.extension.getURL("/css/jishoYoake.css"); 
+                            cssLink .rel = "stylesheet";
+                            cssLink .type = "text/css";
+                            document.head.appendChild(cssLink);
+           }
+               
+           //} while (foundJishoCSS == false || Date.now() < (time + timeout));
        }
     });
 }
@@ -199,20 +237,16 @@ function useStorageToChangeTheme() {
 // #.) Targeting injected script in <iframe>; Make sure hostname is Jisho.org before processing
 if ( document.location.host == "jisho.org" ) {
     
-    // Two attempts to get the dark theme right. Extension can be a little weird at times.
-    useStorageToChangeTheme();
+    // Direct approach to check Dark theme
     useStorageToChangeTheme();
     
-    // Open a persistent connection/port with popup or background.js to communicate with popup.js?
+    // Delayed message approach to check for Dark theme (maybe we can beat iframe load event)
+    chrome.runtime.sendMessage({method: "delayCheckForDarkTheme"}, function(response) {
+        useStorageToChangeTheme(); // Delay B: Reponse back directly rather than another message.
+    });
     
-    /*
-    // Is this faster than chrome storage? // No, no access to chrome.extension.getViews
-    var popupWindows = chrome.extension.getViews({type:'popup'});
-    var popup = popupWindows[0];
-    var theme = popup.getElementById('btnTheme').innerHTML;
-    console.log("Theme from popup: " + theme);
-    themeClicked(theme);
-    */
+    // See Issues and Features for additional ideas on how to make sure the CSS dark theme is
+    // applied properly.
 }
 
 // Change display on Ads to none as they do not size to mobile widths (at least for desktop browsing).
