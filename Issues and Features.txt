@@ -39,25 +39,6 @@ KNOWN ISSUES
             submitted discussion: http://jisho.org/forum/56fc6ae0d5dda719140002d0-please-consider-updating-links-that-lead-outside-jisho-dot-org-to-open-in-a-new-tab
 
 
-    Issue: <iframe> may load an invalid page on startup/seed.
-        Starting the Jisho.org extension may show a Jisho.org webpage that is invalid. Jisho will say that the page you are on doesn't exist. On top of this, it may seem confusing as to what you can do next as the search bar is not present on the error page. Of course, I know you can use the link at the bottom to open another Jisho.org url but it may be too confusing for others. 
-    Workaround:
-        Educate others to make sure that text selections are words or japanese characters. Anything else could ruin the Jisho.org search if not properly filtered.
-    Potential Dev Solutions:
-        (A) If a text selection is to be used, filter/validate it first. Replace all symbols with a space (" "). Then use trim to remove preceeding and trailing spaces. If the remaining text is invalid, resort to the last loaded search page (default when no text selection is found). The invalid reasoning could be logged in console.log(). Text selection may be invalid to search on if trimmed text is:
-         - shortened to less than 3 roman characters
-         - has a length of 0
-        (B) Educate users on Readme.md about text selection seeding and how it could disrupt the Jisho.org extension user's experience.
-    Doesn't break Jisho: ( ) , @
-        Find what breaks Jisho when you can reproduce... use console.log() to report it.
-        
-    Issue 4:
-Dark theme isn't always injected when <iframe> loads a Jisho.org page.
-
-Potential Fix:
-Do the messaging to check for current theme along with Chrome.API for local storage. One is faster than the other but at least the theme will be correct. Even if we inject <style> twice, the Light theme should remove all of them when toggled.
-
-
 Google Chrome Extension UI (popup.css, popup.html, resizing extension, device specific, other)
 --------------------------
 
@@ -190,6 +171,7 @@ THOUGHTS / IMPROVEMENTS
  
  ++ <iframe> Functionality
     #. Dark Theme: Original CSS shows first and then switches to dark (flashing of original CSS)
+    #. <iframe> may load an invalid page on startup, seed, or search.
     
  ++ Google Chrome Extension UI (popup.css, popup.html, resizing extension, device specific, other)
     #. Darker (perhaps VGA monitors) blend dark colors for links on popup.html
@@ -264,6 +246,36 @@ THOUGHTS / IMPROVEMENTS
         themeClicked(theme);
         */
     Completed: 2016.04.04
+    
+    Issue: <iframe> may load an invalid page on startup, seed, or search.
+        Starting the Jisho.org extension may show a Jisho.org webpage that is invalid. Jisho will say that the page you are on doesn't exist. On top of this, it may seem confusing as to what you can do next as the search bar is not present on the error page. Of course, I know you can use the link at the bottom to open another Jisho.org url but it may be too confusing for others. 
+    Dev Solutions:
+        The following areas will need to be addressed:
+         - Text selection seeding (hightlight text > open browser action extension)
+         - Right-click seeding (highlight text > right-click > Search Jisho.org)
+         - Using the searchbar on Jisho.org but within browser action extension's iframe
+         - Loaded 404 error page could be saved to the chrome stroage API which can seed
+        (A) 404 page is loaded in iframe (chrome stroage / searchbar usage / seeded invalid url)
+            1. iframe load event fires a message to get the href from the injected content script.
+            2. content script receives the message and then checks to see if it loaded a 404 error page
+            3. if the 404 error page is loaded, reassign url and do not save it in chrome storage
+            ** reassign will remove invalid characters and refresh to see if that gets the user what they
+               are looking for. Otherwise, homepage is used in reassignment.
+        (B) Text selection seed leads to 404 page (content script)
+            1. On browser action extension launch, the page is searched for selected text
+            2. Selected text, if found, is filtered, and then seeds the iframe with a redirect
+        (C) Right-click seeding to a new tabbed search
+            1. Background.js, which handles the right-click context menu, now filters before seeding.
+        (D) Chrome storage
+            1. Incase chrome storage is called to save an invalid search url, it is now filtered first.
+        (E) Educate visitors on Readme.md that these characters break the Jisho.org search page: . (period)
+        (F) Create a Forum discussion on Jisho.org about two things:
+            1. Characters that break the search url page
+            2. 404 Error page should have searching functionality
+            Created: http://jisho.org/forum/57085ba1d5dda75465000048-periods-in-search-criteria-breaks-search-and-404-error-page-suggestion
+    Doesn't break Jisho: ( ) , @
+    Breaks Jisho: . (periods)
+    Completed: 2016.04.08
  
  
  Google Chrome Extension UI (popup.css, popup.html, resizing extension, device specific, other)

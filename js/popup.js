@@ -177,16 +177,29 @@
                    // {method:"updateLastSearched", data: document.location.href}
                    
                    // TRACKING - User's last search item.
-                    if ( !response.data || response.data == undefined ) {
+                    if ( !response.data || response.data == undefined || response.data == null) {
                         //console.log("Last searched request is invalid: " + response.data);
                         return;
                     }
 
-                    var homepage = "http://jisho.org/";
-                    if ( response.data == homepage ) {
-                        //console.log("Iframe loaded homepage. Not recording search results.");
-                        return;
-                    }
+                    if ( response.data == "http://jisho.org/" )
+                        return; // Do not record the homepage
+                   
+                    if ( response.data.indexOf("http://jisho.org/search/") == -1 )
+                        return; // Do not record pages that are not the Jisho.org search results.
+                   
+                    // We may be asked to record a 404 Error page.
+                    response.data = $.trim(response.data); // remove preceeding and trailing spaces.
+                   
+                    // Filter any invalid characters in search criteria.
+                    // - periods (.) in search values cause Jisho.org 
+                    var searchValue = response.data.substring(24, response.data.length);
+                        searchValue = searchValue.replace(/\./g,"");
+                    
+                    if ( searchValue.length == 0 || searchValue == "")
+                        return; // Do not record a blank search page.
+                   
+                    response.data = "http://jisho.org/search/" + searchValue; // piece together.
 
                     chrome.storage.local.set({lastSearched: response.data}, function() {
                      //console.log("Last search updated: " + response.data);

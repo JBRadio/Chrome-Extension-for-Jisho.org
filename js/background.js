@@ -17,6 +17,7 @@ chrome.contextMenus.onClicked.addListener(onClickHandler);
 // The onClicked callback function.
 function onClickHandler(info, tab) {
   var sText = info.selectionText;
+      sText = sText.replace(/\./g,""); // Jisho.org doesn't handle periods (.); 404 Page
   var url = "http://jisho.org/search/" + encodeURIComponent(sText);  
   window.open(url, '_blank');
 };

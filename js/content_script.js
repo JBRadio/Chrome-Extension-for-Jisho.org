@@ -19,6 +19,8 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
                 text = document.selection.createRange().text;
             }
             
+            text = text.replace(/\./g,""); // Filter text selection to prevent 404 error page.
+            
             //console.log("Text Selected(" + text.length + "): " + text);
             sendResponse({method:"searchSelectedText", data: text});
 
@@ -65,6 +67,8 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
             // Fired from <iframe>'s load() event in Popup.js
             //console.log("Processing: " + request.method);
             
+            var error404 = "Jisho.org | The page you were looking for doesn't exist (404)";
+            
             // Ignore all non-Jisho loaded requests
             if ( document.location.host !== "jisho.org" ) {
                 //console.log("Host rejection: " + document.location.host);
@@ -73,7 +77,34 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
             
             // Ignore non-Jisho searches (Forums, About, etc.)
             if ( document.location.href.indexOf("http://jisho.org/search/") == -1 ) {
-                //console.log("URL rejection: " + document.location.href);
+                if ( document.title == error404 )
+                    document.location.assign("http://jisho.org/"); // default to homepage from 404 page
+                return;
+            }
+            
+            // Determine if the current page is a 404 page
+            if ( document.title == error404 ) {
+                console.log("Jisho.org 404: " + document.location.href);
+
+                var url = document.location.href;
+
+                // Search page criteria probably broke the page.
+                // Filter any invalid characters in search criteria.
+                // - periods (.) in search values cause Jisho.org 
+                var searchValue = url.substring(24, url.length);
+                    searchValue = searchValue.replace(/\./g,"");
+
+                if ( searchValue.length == 0 || searchValue == "") {
+                    document.location.assign("http://jisho.org/"); // default to homepage from 404 page
+                    return; // Do not record a blank search page.
+                }
+
+                // 404 Error page removes searchbar and other website features forcing the user to hit the 
+                // back button or change the url manually. Instead, we'll reload the page without the 
+                // search breaking characters so the user doesn't have to hit back to get to searchbar.
+                var newUrl = "http://jisho.org/search/" + searchValue;
+                console.log("Redirecting to: " + newUrl);
+                document.location.assign(newUrl);
                 return;
             }
             
@@ -272,4 +303,7 @@ document.addEventListener("load", function(event) {
     var Ads = document.getElementsByTagName("ins");
     for ( var i = 0; i < Ads.length; i++)
         Ads[i].style.display = "none";
+    
+    // Do not determine if the page is 404 here. Use the message that is received
+    // from Popup.html's <iframe>'s load event
   });

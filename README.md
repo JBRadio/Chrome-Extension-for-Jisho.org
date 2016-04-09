@@ -15,9 +15,10 @@ If you wish to install this extension, you will need to do the following:
 
 ## Usage
 To use it:
-- click the new Jisho extension button to access the site in a popup/popover window
-- right-click context menu to search Jisho.org with that text
-- seed extension Jisho.org lookup with page-selected text or last searched word
+- click extension button to access the Jisho.org in a popup/popover window and access website features
+- right-click context menu allows you to search Jisho.org quickly in a new tab based on selected text
+- selecting text and opening the extension will seed Jisho.org search results with selected text
+- last search result page is remembered so that you can pick up where you left off
 - Use menu bar (very top) to change preferences
 - Use menu bar (very bottom) to navigate
 - Theme set in the extension will also be set for Jisho.org website when viewed in the tabs of the main browser window (located outside the extension).
@@ -69,6 +70,7 @@ Dark theme credits go to wekateka. Copyright: CC BY-SA 4.0. Slight modifications
  
 ## Considered fixed
  - While dark theme is set, searches in the extension start off Light and then go Dark where the speed of this happening can vary. On 2016.03.30, chrome local storage API is utilized when the content script is executed. I think this is the faster way to check the theme and inject the CSS overriding file. Code is available on GitHub, please let me know if you see a more efficient way to handle this. At this time, this is considered fixed.
+ - Jisho.org's 404 Error Page on extension launch. If periods (.) are seeded into the search URL, Jisho.org loads a 404 error page. The extension now filters out periods (.) to prevent this and will even redirect you to what it thinks you are looking for. You should no longer get stuck on a 404 error page in the extension. I have created a discussion for the Jisho.org webmaster to review the usage of periods (.) in search urls/criteria. http://jisho.org/forum/57085ba1d5dda75465000048-periods-in-search-criteria-breaks-search-and-404-error-page-suggestion
  
  
 ## Discussion and Feedback
@@ -77,5 +79,6 @@ For questions/comments/suggestions please make a post on the Jisho.org forum. He
 
 ## FAQ (Frequently Asked Questions)
  - If any piece of functionality doesn't work. Please first reload the page and try again. The content script in the extension may have not been injected properly or at all in the tab if you just installed the extension or reloaded it.
- - Text selection seeding does not work. First, reload the page for the content script to be properly loaded. If it still continues to fail, check the domain/host to see if it's owned by Google. It may be likely that Google blocks certain actions on its pages. If Google is not the case, please report it in the Jisho.org forum. If you are familiar with the console, please list any errors found that are related to the extension (content_script.js, popup.js).
- - Theme set in the extension will affect your tabbed browsing experience. Please open the extension and change the theme to set it back or change it.
+ - Text selection seeding does not work. First, reload the page for the content script to be properly loaded. If it still continues, it could be possible that the current page does not allow text selections
+ to be gathered by the chrome API or that I haven't anticipated the webpage issue you are having. If you are familiar with the console, please list any errors found that are related to the extension (content_script.js, popup.js).
+ - Dark theme set in the extension will affect your tabbed browsing experience on Jisho.org only. Please open the extension and change the theme to set it back to normal ("Light"). I don't expect you to have issues on pages outside of Jisho.org.

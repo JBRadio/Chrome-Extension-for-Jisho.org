@@ -763,7 +763,7 @@ form.search .scroll_indicator {
     background: rgba(239,178,108,1);
 }
 
-::-webkit-scrollbar-corner { /* Look for the real CSS property */
+::-webkit-scrollbar-corner {
     background: transparent;
 }
 
