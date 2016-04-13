@@ -280,26 +280,52 @@ if ( document.location.host == "jisho.org" ) {
     // applied properly.
 }
 
-// Change display on Ads to none as they do not size to mobile widths (at least for desktop browsing).
+// PAGE MANIPULATIONS
+// ------------------
+// 1.) Change display on Ads to none as they do not size to mobile widths (at least for desktop browsing).
 // This can be tested on a desktop browser by shrinking the width of the window and
 // scrolling down until you see Ads. Note how the long (width-wise) ads produce
 // ugly horizontal scrollbars. Setting them to none should still allow the Ad to load however
 // they may not be clickable.
 // 
 // *** Take off Adblock or similar extensions when testing.
+//
+// 2.) When clicking on an external link (leading outside of Jisho.org) in the extension, we turn
+// the <iframe> into a web browser, which really isn't the intent of it. It looks like links
+// that have a target attribute of "_blank" cannot be opened when clicked within the <iframe>. Based
+// on a Jisho.org forum discussion, external leading links will not be set with the attribute "_blank".
+//
+// METHOD A: Let's target extenal leading links to not open by adding this attribute. 
+// METHOD B: Another way to handle this is to redirect the <iframe> when an external to Jisho.org webpage is loaded.
+//
+// 
 document.addEventListener("DOMContentLoaded", function(event) {
     if ( document.location.host !== "jisho.org" )
         return; // Not sure what <ins> are in other pages
     
+    // 1.) Set Ads to display:none;
     var Ads = document.getElementsByTagName("ins");
     for ( var i = 0; i < Ads.length; i++)
         Ads[i].style.display = "none";
+    
+    // 2.) Set external links to have an attribute of target="_blank"
+    var aTags = document.getElementsByTagName("a");
+    for ( var i = 0; i < aTags.length; i++ ){
+        aTag = aTags[i];
+        console.log(aTag);
+        if ( aTag.getAttribute("href") && aTag.hostname !== location.hostname) {
+            aTag.target = "_blank";
+            console.log(aTag.href);
+        }
+    }
+    
   });
 
 document.addEventListener("load", function(event) {
     if ( document.location.host !== "jisho.org" )
         return;
     
+    // 1.) Set Ads to display:none;
     var Ads = document.getElementsByTagName("ins");
     for ( var i = 0; i < Ads.length; i++)
         Ads[i].style.display = "none";

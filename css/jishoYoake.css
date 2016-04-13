@@ -736,6 +736,15 @@
   }
 
 /* Extra */
+
+#zen_bar .furigana {
+    /* When a prefix is searched, pink characters with furigana appear to explain the prefix and/or
+       noun. The Kanji is fine but the furigana is black on a dark background. For example, search
+       "新年度" in Jisho.org to notice the Prefix+Noun header with the hard-to-see furigana.
+    */
+    color: #EF7D6C !important
+}
+
 form.search .scroll_indicator {
     /* When using the Draw, Radical tools, there's a linear gradient used to indicate that you can
        scroll to the right for more Kanji. Shows as red-to-white. */

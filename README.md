@@ -65,7 +65,6 @@ Dark theme credits go to wekateka. Copyright: CC BY-SA 4.0. Slight modifications
 
 ## Known Extension Behaviors and Issues
  - "Draw" feature in popover window does not work if window size was recently changed. Usually when the window starts as "Narrow" and then is changed to "Wide." This doesn't appear to be a problem if the window size starts as "Wide." As a workaround, please close the extension window and open it again (window size is saved as a preference) to use "Draw." The "radical" search feature appears to work fine in either starting window size.
- - Clicking on external links (leads outside of Jisho.org) can be opened in the iframe. Functionality has been optimized for pages within the Jisho.org domain. Although the iframe will load the external pages, it is suggested to not click on these links in the extension for now. Please click the link and use it in one of the tabs in the main browser window. You can still navigate back to the Jisho.org pages by using the navigation links at the bottom (Back, Adv Search). Submitted forum discussion for webmaster to make all external links open in a new tab which aren't opened in an iframe: http://jisho.org/forum/56fc6ae0d5dda719140002d0-please-consider-updating-links-that-lead-outside-jisho-dot-org-to-open-in-a-new-tab
  
  
 ## Considered fixed
@@ -82,3 +81,4 @@ For questions/comments/suggestions please make a post on the Jisho.org forum. He
  - Text selection seeding does not work. First, reload the page for the content script to be properly loaded. If it still continues, it could be possible that the current page does not allow text selections
  to be gathered by the chrome API or that I haven't anticipated the webpage issue you are having. If you are familiar with the console, please list any errors found that are related to the extension (content_script.js, popup.js).
  - Dark theme set in the extension will affect your tabbed browsing experience on Jisho.org only. Please open the extension and change the theme to set it back to normal ("Light"). I don't expect you to have issues on pages outside of Jisho.org.
+ - External Website Links cannot be clicked on. This is by design as the chrome extension is made for use on Jisho.org. Links can still be opened in a new tab by right-clicking the link and clicking "Open Link In New Tab."

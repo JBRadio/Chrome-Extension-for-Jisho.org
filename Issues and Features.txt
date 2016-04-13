@@ -12,8 +12,8 @@ KNOWN ISSUES
 ------------
 
 ++ <iframe> Functionality (Loading, CSS, Buttons interacting with <iframe>, Content Script)
-    #. Accessing pages that lead outside of Jisho.org domain can cause issues (Asking admin to review)
-
+    #. Window.history.back() doesn't properly go back one page for <iframe> sometimes
+    
 ++ Google Chrome Extension UI (popup.css, popup.html, resizing extension, device specific, other)
 
 ++ Google Chrome tab browsing (Content script)
@@ -26,17 +26,6 @@ KNOWN ISSUES
 
 <iframe> Functionality (Loading, CSS, Buttons interacting with <iframe>, Content Script)
 ----------------------
-
-    Issue: Accessing pages that lead outside of Jisho.org domain can cause issues
-        Clicking on a link in the About page for Jisho.org could lead you outside the Jisho.org domain and cause issues with links to be used with the <iframe>.
-    Workaround:
-        The current workaround is to suggest not clicking on these links in the extension for now. Click the link in one of the tabs in the main browser window.
-    Potential Dev Solutions:
-        (A) Allow bottom menu links to work in <iframe> when the document.location.href does not contain
-            Jisho.org.
-        (B) Modify content script to change all links in Jisho.org's about page to open in a new tab.
-        (C) Submit forum discussion for webmaster to make all external links open in a new tab. I have    
-            submitted discussion: http://jisho.org/forum/56fc6ae0d5dda719140002d0-please-consider-updating-links-that-lead-outside-jisho-dot-org-to-open-in-a-new-tab
 
 
 Google Chrome Extension UI (popup.css, popup.html, resizing extension, device specific, other)
@@ -52,6 +41,7 @@ Google Chrome tab browsing (Content script)
         Use the extension to set the theme to "Light" if dark is not the desired affect.
     Potential Dev Solutions:
         Look up how to identify if your current document is embedded into another document or has a parent document. If you have a parent document or know you are embedded, override the CSS, otherwise, do not. 
+
 
 Session Persistence (New session of the extension doesn't remember what happened in the old session)
 -------------------
@@ -84,9 +74,16 @@ Session Persistence (New session of the extension doesn't remember what happened
        If text selected and last typed, confirm, before loading the <iframe> if the user would like text
         selection or lastTyped.
          - Alternatively, we could add an action sheet item to "Open last typed search" or something like that
+         
+    If lastTyped == lastSearched search criteria, clear value for lastTyped.
            
            
-           
+   Issue: Window.history.back() doesn't properly go back one page for <iframe> sometimes
+      Sometimes clicking "Back" goes to the first page loads or skips previously loaded pages.
+   Potential Dev Solutions:
+      (A) Track pages loaded, in chrome.storage or non-persistent variable, and cycle backwards when "Back"     is clicked.
+   
+   
    Issue: "Back" page history isn't remembered (window.history.back())
       If you've used the extension before and started it again, the "Back" button will only work on new
       pages loaded in that session.
@@ -119,6 +116,7 @@ THOUGHTS / IMPROVEMENTS
  ++ Options page
  ++ Bottom bar for additional features as links
  ++ If <iframe> takes a considerable time to load jisho.org on extension open
+ ++ Allow user access to Jisho.org related links (Facebook, Twitter, Mailto:Jisho.org)
 
 
    - If <iframe> takes a considerable time to load jisho.org on extension open, 
@@ -172,6 +170,7 @@ THOUGHTS / IMPROVEMENTS
  ++ <iframe> Functionality
     #. Dark Theme: Original CSS shows first and then switches to dark (flashing of original CSS)
     #. <iframe> may load an invalid page on startup, seed, or search.
+    #. Jisho.org has external links that do not open automatically in a new tab.
     
  ++ Google Chrome Extension UI (popup.css, popup.html, resizing extension, device specific, other)
     #. Darker (perhaps VGA monitors) blend dark colors for links on popup.html
@@ -276,6 +275,19 @@ THOUGHTS / IMPROVEMENTS
     Doesn't break Jisho: ( ) , @
     Breaks Jisho: . (periods)
     Completed: 2016.04.08
+    
+    Issue: Jisho.org has external links that do not open automatically in a new tab.
+        Clicking on a link in the About page for Jisho.org or in the footer section of a search page, could load an external-to-Jisho.org page in the <iframe>. This caused issues with the navigation links in the bottom menu bar and also goes against the purpose of the Jisho.org chrome extensions. The <iframe> is not meant to be for browsing outside Jisho.org. The browsing functionality is very limited in an <iframe>/Extension when compared to the navigation of the main browser's tab.
+    Dev Solutions:
+        (A) Content script locates and creates a target="_blank" attribute to links leading to external 
+            sites/webpages.
+        (B) Back/Forward links work in case an external page is loaded.
+        (C) Adv Search link can still be used to bring users back to Jisho.org.
+    Jisho.org Forum Discussion:
+        Submit forum discussion for webmaster to make all external links open in a new tab. I have    
+        submitted discussion: http://jisho.org/forum/56fc6ae0d5dda719140002d0-please-consider-updating-links-that-lead-outside-jisho-dot-org-to-open-in-a-new-tab
+         - Developer will not create target="_blank" attributes.
+    Completed: 2016.04.12
  
  
  Google Chrome Extension UI (popup.css, popup.html, resizing extension, device specific, other)
@@ -291,7 +303,7 @@ THOUGHTS / IMPROVEMENTS
         
     Issue: Extra vertical scrollbars on screens with lower screen resolutions
         (Tested with a 15-17 inch screen) Smaller screen PC resolutions in combination with smaller vertical screen heights may contribute to the Google Chrome extension appearing with an additional veritical scrollbar next to the iframe's vertical scrollbar - leading to double vertical scrollbars.
-    Potential Dev Solutions:
+    Dev Solutions:
         Make changes specific to device height and width in CSS.
         @media screen and (max-height: 600px) { 
             iframe { /* Noticed the additional vertical scrollbar with a less resolution monitor */
