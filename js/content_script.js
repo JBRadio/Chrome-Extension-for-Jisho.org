@@ -308,16 +308,26 @@ document.addEventListener("DOMContentLoaded", function(event) {
     for ( var i = 0; i < Ads.length; i++)
         Ads[i].style.display = "none";
     
+    /* No longer setting target="_blank" since this will start to separate the
+       Jisho.org website from the extension. Navigation links at the bottom of the extension
+       will get you back to Jisho.org.
+    
     // 2.) Set external links to have an attribute of target="_blank"
-    var aTags = document.getElementsByTagName("a");
+    //var aTags = document.getElementsByTagName("a");
+    // http://stackoverflow.com/questions/24133231/concatenating-html-object-arrays-with-javascript
+      var aTag1 = Array.prototype.slice.call(document.getElementById('secondary').getElementsByTagName('a'));
+      var aTag2 = Array.prototype.slice.call(document.getElementsByTagName('footer')[0].getElementsByTagName('a'));
+      var aTags = aTag1.concat(aTag2);
+    
     for ( var i = 0; i < aTags.length; i++ ){
         aTag = aTags[i];
-        console.log(aTag);
+        //console.log(aTag);
         if ( aTag.getAttribute("href") && aTag.hostname !== location.hostname) {
             aTag.target = "_blank";
-            console.log(aTag.href);
+            //console.log(aTag.href);
         }
     }
+    */
     
   });
 

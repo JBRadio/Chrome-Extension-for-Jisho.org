@@ -160,6 +160,10 @@ THOUGHTS / IMPROVEMENTS
       extension (content script)
      Credits, Donate button
      Other ideas...
+     Remember lastTyped characters
+     Remember lastSearched search criteria
+     Use highlighted page text selection for seeding
+     Use right-click context menu from extension
  
  
  
@@ -288,6 +292,11 @@ THOUGHTS / IMPROVEMENTS
         submitted discussion: http://jisho.org/forum/56fc6ae0d5dda719140002d0-please-consider-updating-links-that-lead-outside-jisho-dot-org-to-open-in-a-new-tab
          - Developer will not create target="_blank" attributes.
     Completed: 2016.04.12
+    Reverted: 
+        Due to performance reasons, especially on slower computers, and the fact that additional
+        link functionality is added Jisho.org, I've decided to allow external links with the help 
+        of the iframe navigation links. Also, it's difficult to loop just on external links as they
+        can appear anywhere on the document. 
  
  
  Google Chrome Extension UI (popup.css, popup.html, resizing extension, device specific, other)

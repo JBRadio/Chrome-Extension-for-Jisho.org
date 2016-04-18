@@ -37,10 +37,12 @@
     color: #EFB26C;
   }
   
+/*
   a, a:visited {
     color:#EF7D6C !important;
   }
-  
+*/
+
   button, .button {
     color:#EFB26C !important;
     background-color: #2A1B1B;
@@ -271,10 +273,12 @@
     color: #999;
   }
 
+/*
   .concept_light-status .concept_light-status_link {
    width:3.2em;  
   }
-  
+*/
+
   .accordion dd>.content.active, .f-dropdown, .f-dropdown.drop-right, .f-dropdown.drop-left, .f-dropdown.drop-top, .f-dropdown.content, .joyride-expose-wrapper, [data-magellan-expedition], [data-magellan-expedition-clone], .pricing-table .description, .pricing-table .bullet-item, .pricing-table .cta-button, .reveal-modal, dialog, .switch label:after, .switch label:after, .admin_section, .add_to_list_adder {
     background-color: #2a1b1b;
     /* display:inline-block; */ /* Uncomment as it created a horizontal scrollbar in extension */
@@ -737,13 +741,74 @@
 
 /* Extra */
 
-#zen_bar .furigana {
-    /* When a prefix is searched, pink characters with furigana appear to explain the prefix and/or
-       noun. The Kanji is fine but the furigana is black on a dark background. For example, search
-       "新年度" in Jisho.org to notice the Prefix+Noun header with the hard-to-see furigana.
-    */
-    color: #EF7D6C !important
+/* Updates to Jisho.org css */
+
+@media only screen and (max-width: 40em) {
+    
+/* "Show # collocation" hovering div takes up too much horizontal and vertical space */
+.reveal-modal, dialog {
+    min-height: 10vh;
+    width: 95%;
 }
+    
+}
+
+/* Jisho Yoake changes - Rmoval 
+
+// "Play audio", "Show 3 collocations" links are forced into multiple lines.
+.concept_light-status .concept_light-status_link {
+    width: 3.2em;
+
+// Remove this to allow easier link color overrides - see link changes
+a, a:visited {
+    color:#EF7D6C !important;
+  }
+
+}
+
+End - Jisho Yoake changes - Removal*/
+
+/* Link colors: Maintaining reddish links throughout the page - removing !important 
+   - May want to consider removing link underline and showing it on hover.
+   - May want to consider changing link color on hover.
+*/
+
+body a, body a:visited, body a:hover, 
+ul li a, ul li a:visited, ul li a:hover, 
+.f-dropdown li a, .f-dropdown li a:visited, .f-dropdown li a:hover {
+    color: #EF7D6C;
+}
+
+/* END - Link colors: Maintaining reddish links throughout the page */
+
+/* Search result help colors (Furigana mo!)
+
+   Search results sometimes has additional functionality like grammar boxes or sentence identifiers
+   with links (prefix, verb, particles, etc.) When furigana is used, the color is black on a dark
+   themed background.
+
+   For examples: For example, search in Jisho.org: 
+   新年度
+   一人が欠けているから出来ない。
+*/
+
+#zen_bar li[data-pos] a, #zen_bar li[data-pos] span {
+    color: #c8c8c8;
+}
+
+#zen_bar .furigana {
+    color: #EFB26C;
+}
+
+#zen_bar li[data-pos=Particle] a {
+    /* Do NOT include span as it will likely be empty */
+    color: #EF7D6C;
+    border-bottom: 1px solid #EF7D6C;
+}
+
+/* END - Search result help colors (Furigana mo!)
+
+/* Scrollbar changes */
 
 form.search .scroll_indicator {
     /* When using the Draw, Radical tools, there's a linear gradient used to indicate that you can
