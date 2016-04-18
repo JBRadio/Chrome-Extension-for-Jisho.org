@@ -775,7 +775,9 @@ End - Jisho Yoake changes - Removal*/
 
 body a, body a:visited, body a:hover, 
 ul li a, ul li a:visited, ul li a:hover, 
-.f-dropdown li a, .f-dropdown li a:visited, .f-dropdown li a:hover {
+.f-dropdown li a, .f-dropdown li a:visited, .f-dropdown li a:hover,
+a, a:hover, a:visited,
+.discussions_list .discussion_thread .comment_wrapper .discussion_title h2 a {
     color: #EF7D6C;
 }
 
