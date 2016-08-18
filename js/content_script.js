@@ -1,3 +1,5 @@
+//DEBUG:
+//console.log("Injected Content Script");
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     
     // DEBUG:
@@ -8,6 +10,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     
         // CONTENT SCRIPT - TEXT SELECTION SEED (EVENT LISTENER) << MESSAGE OUTBOUND >>
         // ------------------------------------
+        /* MOVING TO DEFAULT WITH A WINDOW CHECK
         case "getSelection":
             //console.log("Processing: " + request.method);
             
@@ -19,12 +22,14 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
                 text = document.selection.createRange().text;
             }
             
+            //console.log("text: " + text);
             text = text.replace(/\./g,""); // Filter text selection to prevent 404 error page.
             
             //console.log("Text Selected(" + text.length + "): " + text);
             sendResponse({method:"searchSelectedText", data: text});
 
         break;
+        */
 
         // CONTENT SCRIPT - DARK\LIGHT THEME (EVENT LISTENER) << MESSAGE INBOUND >>
         // ---------------------------------
@@ -87,25 +92,37 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
                 console.log("Jisho.org 404: " + document.location.href);
 
                 var url = document.location.href;
-
+                
                 // Search page criteria probably broke the page.
                 // Filter any invalid characters in search criteria.
                 // - periods (.) in search values cause Jisho.org 
                 var searchValue = url.substring(24, url.length);
-                    searchValue = searchValue.replace(/\./g,"");
+                
+                if ( searchValue.indexOf('.') >= 0 ) {
+                    searchValue = searchValue.replace(/\./g,""); // Periods
+                    searchValue = searchValue.replace(/\r\n/g,""); // Lines
+                    searchValue = searchValue.replace(/\r/g,""); // Lines
+                    searchValue = searchValue.replace(/\n/g,""); // Lines
+                    searchValue = searchValue.replace(/\s\s/g," "); // Doublespaces
+                    searchValue = searchValue.replace(/;/g,""); // semi-colons
 
-                if ( searchValue.length == 0 || searchValue == "") {
+                    if ( searchValue.length == 0 || searchValue == "") {
+                        document.location.assign("http://jisho.org/"); // default to homepage from 404 page
+                        return; // Do not record a blank search page.
+                    }
+
+                    // 404 Error page removes searchbar and other website features forcing the user to hit the 
+                    // back button or change the url manually. Instead, we'll reload the page without the 
+                    // search breaking characters so the user doesn't have to hit back to get to searchbar.
+                    var newUrl = "http://jisho.org/search/" + searchValue;
+                    console.log("Redirecting to: " + newUrl);
+                    document.location.assign(newUrl);
+                    return;
+                    
+                } else {
                     document.location.assign("http://jisho.org/"); // default to homepage from 404 page
                     return; // Do not record a blank search page.
                 }
-
-                // 404 Error page removes searchbar and other website features forcing the user to hit the 
-                // back button or change the url manually. Instead, we'll reload the page without the 
-                // search breaking characters so the user doesn't have to hit back to get to searchbar.
-                var newUrl = "http://jisho.org/search/" + searchValue;
-                console.log("Redirecting to: " + newUrl);
-                document.location.assign(newUrl);
-                return;
             }
             
             //console.log("Sending response for: " + document.location.href);
@@ -113,7 +130,30 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
             break;
             
     default:
-        console.log("Method is invalid: " + request.method);
+            
+        // Issues with grabbing text selection when multiple iframes exist.
+        // Confirm on Jisho.org where ads are in <iframe>
+        // State on ReadMe that Text Selection may not work if within iframes; Top level should be ok with this code
+        if ( (request.method == "getSelection") && (window == window.top) ) {
+            //console.log("Processing: " + request.method);
+            
+            // Credit: http://stackoverflow.com/questions/5379120/get-the-highlighted-selected-text
+            var text = "";
+            if (window.getSelection) {
+                text = window.getSelection().toString();
+            } else if (document.selection && document.selection.type != "Control") {
+                text = document.selection.createRange().text;
+            }
+            
+            console.log("User selected text for Jisho.org: " + text);
+            text = text.replace(/\./g,""); // Filter text selection to prevent 404 error page.
+            
+            //console.log("Text Selected(" + text.length + "): " + text);
+            sendResponse({method:"searchSelectedText", data: text});
+            
+        } else {
+            //console.log("Method is invalid: " + request.method " - Ignore if multiple iframes on page");
+        }
     }
     
     
@@ -140,14 +180,14 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
             case "Light":
                 // #.) Gather all <link> tags
                 var darkCssLink = document.head.getElementsByTagName("link"); // Search only <head>
-                console.log(darkCssLink);
+                //console.log(darkCssLink);
                 
                 // #.) Go through all <link> in <head> to determine if we can remove the dark theme <link> tag
                 if ( darkCssLink.length > 0 ) {
                     //for ( var i = 0; i < darkCssLink.length; i++) { // need to go backwards
                     for ( var i = darkCssLink.length-1; i >= 0; i--) {
                         if ( darkCssLink[i].href.indexOf("/css/jishoYoake.css") > 0 ) {
-                            console.log("Removed link: " + darkCssLink[i].href);
+                            //console.log("Removed link: " + darkCssLink[i].href);
                             darkCssLink[i].parentNode.removeChild(darkCssLink[i]);
                             // Do not break, may have injected more than one.
                         }
@@ -171,19 +211,22 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
         switch (linkClicked)
         {
             case "back":
-                window.history.back();
+                //window.history.back();
+                window.history.go(-1); // See if 'Back' is better with ".go"
                 break;
                 
             case "forward":
-                window.history.forward();
+                //window.history.forward();
+                window.history.go(1);
                 break
                 
             case "top":
+                window.scroll(0,0); // Scroll <iframe> document to the top of the page/documenet/window    
+                
+                
                 if ( document.location.host !== "jisho.org" )
                     return; // We should only be performing these methods in the <iframe>
                 
-                // #.) Scroll <iframe> to the Top    
-                window.scroll(0,0);
                 // Return focus to the search bar for an additional search without mouse interaction
                 // <input type="text" class="keyword japanese_gothic" name="keyword" id="keyword" ...>
                 var searchBar = document.getElementById('keyword');
@@ -213,6 +256,9 @@ function useStorageToChangeTheme() {
     
     // Call local storage function directly to see if we should use a dark theme on loaded pages
     // in <iframe> or stick to Jisho.org theme ("Light")
+    
+    // #.) Check that we are in the iFrame within the Chrome Extension and not just a Jisho.org webpage.
+    
     chrome.storage.local.get("theme", function (result) {
            
        // #.) No set theme = undefined so make it the default CSS style (Light).
@@ -259,87 +305,81 @@ function useStorageToChangeTheme() {
                             cssLink .type = "text/css";
                             document.head.appendChild(cssLink);
            }
-               
+           
            //} while (foundJishoCSS == false || Date.now() < (time + timeout));
        }
     });
+    
 }
 
-// #.) Targeting injected script in <iframe>; Make sure hostname is Jisho.org before processing
-if ( document.location.host == "jisho.org" ) {
-    
-    // Direct approach to check Dark theme
-    useStorageToChangeTheme();
-    
-    // Delayed message approach to check for Dark theme (maybe we can beat iframe load event)
-    chrome.runtime.sendMessage({method: "delayCheckForDarkTheme"}, function(response) {
-        useStorageToChangeTheme(); // Delay B: Reponse back directly rather than another message.
-    });
-    
-    // See Issues and Features for additional ideas on how to make sure the CSS dark theme is
-    // applied properly.
-}
+// Can a chrome extension content script detect if it is running in iframe or top-level?
+// http://stackoverflow.com/questions/3641643/can-a-chrome-extension-content-script-detect-if-it-is-running-in-iframe-or-top-l
 
-// PAGE MANIPULATIONS
-// ------------------
-// 1.) Change display on Ads to none as they do not size to mobile widths (at least for desktop browsing).
-// This can be tested on a desktop browser by shrinking the width of the window and
-// scrolling down until you see Ads. Note how the long (width-wise) ads produce
-// ugly horizontal scrollbars. Setting them to none should still allow the Ad to load however
-// they may not be clickable.
-// 
-// *** Take off Adblock or similar extensions when testing.
-//
-// 2.) When clicking on an external link (leading outside of Jisho.org) in the extension, we turn
-// the <iframe> into a web browser, which really isn't the intent of it. It looks like links
-// that have a target attribute of "_blank" cannot be opened when clicked within the <iframe>. Based
-// on a Jisho.org forum discussion, external leading links will not be set with the attribute "_blank".
-//
-// METHOD A: Let's target extenal leading links to not open by adding this attribute. 
-// METHOD B: Another way to handle this is to redirect the <iframe> when an external to Jisho.org webpage is loaded.
-//
-// 
-document.addEventListener("DOMContentLoaded", function(event) {
-    if ( document.location.host !== "jisho.org" )
-        return; // Not sure what <ins> are in other pages
-    
-    // 1.) Set Ads to display:none;
-    var Ads = document.getElementsByTagName("ins");
-    for ( var i = 0; i < Ads.length; i++)
-        Ads[i].style.display = "none";
+if (window != window.top) { // Everything in this check as we only want to modify the page if it's within the extension's iframe
+
+    // #.) Targeting injected script in <iframe>; Make sure hostname is Jisho.org before processing
+    if ( document.location.host == "jisho.org" ) {
+
+        // Direct approach to check Dark theme
+        useStorageToChangeTheme();
+
+        // Delayed message approach to check for Dark theme (maybe we can beat iframe load event)
+        chrome.runtime.sendMessage({method: "delayCheckForDarkTheme"}, function(response) {
+            useStorageToChangeTheme(); // Delay B: Reponse back directly rather than another message.
+        });
+
+        // See Issues and Features for additional ideas on how to make sure the CSS dark theme is
+        // applied properly.
+    }
+
+    // PAGE MANIPULATIONS
+    // ------------------
+    // 1.) Change display on Ads to none as they do not size to mobile widths (at least for desktop browsing).
+    // 
+    // *** Take off Adblock or similar extensions when testing.
+    //
+    // 2.) When clicking on an external link (leading outside of Jisho.org) in the extension, we turn
+    // the <iframe> into a web browser, which really isn't the intent of it. It looks like links
+    // that have a target attribute of "_blank" cannot be opened when clicked within the <iframe>. Based
+    // on a Jisho.org forum discussion, external leading links will not be set with the attribute "_blank".
+    //
+    // METHOD A: Let's target extenal leading links to not open by adding this attribute. 
+    // METHOD B: Another way to handle this is to redirect the <iframe> when an external to Jisho.org webpage is loaded.
     
     /* No longer setting target="_blank" since this will start to separate the
-       Jisho.org website from the extension. Navigation links at the bottom of the extension
-       will get you back to Jisho.org.
-    
-    // 2.) Set external links to have an attribute of target="_blank"
-    //var aTags = document.getElementsByTagName("a");
-    // http://stackoverflow.com/questions/24133231/concatenating-html-object-arrays-with-javascript
-      var aTag1 = Array.prototype.slice.call(document.getElementById('secondary').getElementsByTagName('a'));
-      var aTag2 = Array.prototype.slice.call(document.getElementsByTagName('footer')[0].getElementsByTagName('a'));
-      var aTags = aTag1.concat(aTag2);
-    
-    for ( var i = 0; i < aTags.length; i++ ){
-        aTag = aTags[i];
-        //console.log(aTag);
-        if ( aTag.getAttribute("href") && aTag.hostname !== location.hostname) {
-            aTag.target = "_blank";
-            //console.log(aTag.href);
-        }
-    }
+           Jisho.org website from the extension. Navigation links at the bottom of the extension
+           will get you back to Jisho.org.
     */
     
-  });
+    document.addEventListener("DOMContentLoaded", function(event) {
+        if ( document.location.host !== "jisho.org" )
+            return; // Not sure what <ins> are in other pages
 
-document.addEventListener("load", function(event) {
-    if ( document.location.host !== "jisho.org" )
-        return;
+        // 1.) Set Ads to display:none;
+        // Change display on Ads to none as they do not size to mobile widths (at least for desktop browsing).
+        // This can be tested on a desktop browser by shrinking the width of the window and
+        // scrolling down until you see Ads. Note how the long (width-wise) ads produce
+        // ugly horizontal scrollbars. Setting them to none should still allow the Ad to load however
+        // they may not be clickable.
+        // 
+        // *** Take off Adblock or similar extensions when testing.
+        var node = document.createElement('style');
+        var str = 'ins { display:none; } ' + 
+                  'div.search-results__sidebar-ad { display:none; } ' + 
+                  'div.footer-ad { display:none; }';
+        node.innerHTML = str;
+        document.head.appendChild(node);
+
+    });
     
-    // 1.) Set Ads to display:none;
-    var Ads = document.getElementsByTagName("ins");
-    for ( var i = 0; i < Ads.length; i++)
-        Ads[i].style.display = "none";
-    
-    // Do not determine if the page is 404 here. Use the message that is received
-    // from Popup.html's <iframe>'s load event
-  });
+    /* Test load events if DOMContentLoaded isn't working */
+    /*
+    document.addEventListener("load", function(event) {
+        if ( document.location.host !== "jisho.org" )
+            return;
+
+        // Do not determine if the page is 404 here. Use the message that is received
+        // from Popup.html's <iframe>'s load event
+    });
+    */
+}

@@ -205,6 +205,7 @@
                      //console.log("Last search updated: " + response.data);
                     });
                });
+               
            });
            
            document.getElementById('ifJisho').addEventListener("progress", function() {
@@ -376,8 +377,10 @@
         //       If there is no selected text to lookup, check lastSearch in chrome.storage, 
         //        otherwise default homepage
         chrome.tabs.query({ currentWindow: true, active: true }, function (tabs) {
+            
             // 2.) Communicate with the injected script on the active tab
             chrome.tabs.sendMessage(tabs[0].id, {method: "getSelection"}, function(response){
+                
                 // 3.) Validate message response / text selection
                 if ( !response || response.data == undefined ) {
                     console.log("Selection text is invalid or non-existent.");

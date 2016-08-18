@@ -17,11 +17,10 @@ KNOWN ISSUES
 ++ Google Chrome Extension UI (popup.css, popup.html, resizing extension, device specific, other)
 
 ++ Google Chrome tab browsing (Content script)
-    #. Accessing Jisho.org in a tab will take advantage of the theme set in the extension
 
 ++ Session Persistence (New session of the extension doesn't remember what happened in the old session)
-    #. Search bar typed characters aren't remembered on launch
-    #. "Back" page history isn't remembered (window.history.back())
+    #. Search bar typed characters aren't remembered on re-launch
+    #. "Back" page history isn't remembered properly (window.history.back() not a good solution)
 
 
 <iframe> Functionality (Loading, CSS, Buttons interacting with <iframe>, Content Script)
@@ -34,13 +33,6 @@ Google Chrome Extension UI (popup.css, popup.html, resizing extension, device sp
 
 Google Chrome tab browsing (Content script)
 --------------------------
-
-    Issue: Accessing Jisho.org in a tab will take advantage of the theme set in the extension
-        Setting the theme to dark in the extension will overwrite the CSS in any tab used with Jisho.org
-    Workaround:
-        Use the extension to set the theme to "Light" if dark is not the desired affect.
-    Potential Dev Solutions:
-        Look up how to identify if your current document is embedded into another document or has a parent document. If you have a parent document or know you are embedded, override the CSS, otherwise, do not. 
 
 
 Session Persistence (New session of the extension doesn't remember what happened in the old session)
@@ -84,7 +76,7 @@ Session Persistence (New session of the extension doesn't remember what happened
       (A) Track pages loaded, in chrome.storage or non-persistent variable, and cycle backwards when "Back"     is clicked.
    
    
-   Issue: "Back" page history isn't remembered (window.history.back())
+   Issue: "Back" page history isn't remembered properly (window.history.back() not a good solution)
       If you've used the extension before and started it again, the "Back" button will only work on new
       pages loaded in that session.
      Workaround:
@@ -320,3 +312,31 @@ THOUGHTS / IMPROVEMENTS
             }
         }
     Completed: 2016.04.01
+    
+    
+Google Chrome tab browsing (Content script)
+--------------------------
+
+    Issue: Accessing Jisho.org in a tab will take advantage of the theme set in the extension
+        Setting the theme to dark in the extension will overwrite the CSS in any tab used with Jisho.org
+    Workaround:
+        Use the extension to set the theme to "Light" if dark is not the desired affect.
+    Potential Dev Solutions:
+        Look up how to identify if your current document is embedded into another document or has a parent document. If you have a parent document or know you are embedded, override the CSS, otherwise, do not.
+    Dev Soluions:
+        In content_script.js, we now check to make sure our document is in an <iframe> before changing the theme.
+        // Can a chrome extension content script detect if it is running in iframe or top-level?
+        // http://stackoverflow.com/questions/3641643/can-a-chrome-extension-content-script-detect-if-it-is-running-in-iframe-or-top-l
+    Completed: 2016.08.18
+    
+    Issue: #. Text Selection seeding may not work properly if page contains <iframe> elements
+        Text selection seeding does not work all the time. This is due to multiple <iframes> loaded on the page. In manifest.json, we have permission to inject the content script into all_frames:true. These other iframes are causing conflicts when sending back text selections--we're getting too many back including blanks for the non-top document or webpage being viewed.
+    Workaround:
+        Don't use text selection if iframes are present.
+    Potential Dev Solutions:
+        Look up how to identify if your current document is embedded into another document or has a parent document. If you have a parent document or know you are embedded, override the CSS, otherwise, do not.
+    Dev Soluions:
+        In content_script.js, we now check to make sure our document is in an <iframe> before changing the theme.
+        // Can a chrome extension content script detect if it is running in iframe or top-level?
+        // http://stackoverflow.com/questions/3641643/can-a-chrome-extension-content-script-detect-if-it-is-running-in-iframe-or-top-l
+    Completed: 2016.08.18

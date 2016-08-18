@@ -17,10 +17,10 @@ If you wish to install this extension, you will need to do the following:
 To use it:
 - click extension button to access the Jisho.org in a popup/popover window and access website features
 - right-click context menu allows you to search Jisho.org quickly in a new tab based on selected text
-- selecting text and opening the extension will seed Jisho.org search results with selected text
-- last search result page is remembered so that you can pick up where you left off
+- selecting text and opening the extension will seed Jisho.org search results with selected text (see FAQ for any issues)
+- last search result page is remembered so that you can pick up where you left off (when no text is selected prior to launch)
 - Use menu bar (very top) to change preferences
-- Use menu bar (very bottom) to navigate
+- Use menu bar (very bottom) to navigate Jisho.org searches
 - Theme set in the extension will also be set for Jisho.org website when viewed in the tabs of the main browser window (located outside the extension).
 
 
@@ -42,8 +42,8 @@ Open Unofficial Jisho Google Extension GitHub project page (check back for updat
 
 ## Additional Features - Bottom menu
 - Navigation: Navigate forwards and backwards for pages loaded in one session (non-closing of extension)
-- Scroll Top: Like to make a another search? In addition to Ctrl+Home or Cmd+Up, you can click "Top."
-- Search Documentation: Link to Advanced Search Options to use in search bar
+- Top: Like to make a another search? In addition to Ctrl+Home or Cmd+Up, you can click "Top" to get back to the search bar
+- Adv Search: Link to Advanced Search bar documentation
 - Copy Link: Copy current page location to clipboard for sharing with other applications.
 
 
@@ -65,6 +65,7 @@ Dark theme credits go to wekateka. Copyright: CC BY-SA 4.0. Slight modifications
 
 ## Known Extension Behaviors and Issues
  - "Draw" feature in popover window does not work if window size was recently changed. Usually when the window starts as "Narrow" and then is changed to "Wide." This doesn't appear to be a problem if the window size starts as "Wide." As a workaround, please close the extension window and open it again (window size is saved as a preference) to use "Draw." The "radical" search feature appears to work fine in either starting window size.
+ - Back/Forward in Extension may not work for all pages navigated to.
  
  
 ## Considered fixed
@@ -78,6 +79,4 @@ For questions/comments/suggestions please make a post on the Jisho.org forum. He
 
 ## FAQ (Frequently Asked Questions)
  - If any piece of functionality doesn't work. Please first reload the page and try again. The content script in the extension may have not been injected properly or at all in the tab if you just installed the extension or reloaded it.
- - Text selection seeding does not work. First, reload the page for the content script to be properly loaded. If it still continues, it could be possible that the current page does not allow text selections
- to be gathered by the chrome API or that I haven't anticipated the webpage issue you are having. If you are familiar with the console, please list any errors found that are related to the extension (content_script.js, popup.js).
- - Dark theme set in the extension will affect your tabbed browsing experience on Jisho.org only. Please open the extension and change the theme to set it back to normal ("Light"). I don't expect you to have issues on pages outside of Jisho.org.
+ - Text selection seeding does not work. First, reload the page for the content script to be properly loaded. If it still continues, it could be possible that the current page does not allow text selections to be gathered by the chrome API or that I haven't anticipated the webpage issue you are having. If you are familiar with the console, please list any errors found that are related to the extension (content_script.js, popup.js). Also, iframes may prevent the detection of text selections
